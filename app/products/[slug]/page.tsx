@@ -42,8 +42,11 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-12 flex items-center justify-center min-h-[50vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="min-h-screen bg-background gradient-mesh">
+        <div className="container mx-auto px-4 py-12 flex flex-col items-center justify-center min-h-[50vh]">
+          <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+          <p className="text-muted-foreground">Loading product details...</p>
+        </div>
       </div>
     );
   }
@@ -52,8 +55,13 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
     notFound();
   }
 
+  const galleryImages = [
+    { url: product.imageUrl, order: 0 },
+    ...product.gallery
+  ].sort((a, b) => a.order - b.order);
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background gradient-mesh">
       <div className="container mx-auto px-4 py-8">
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Left: Image Gallery */}
@@ -64,98 +72,108 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           {/* Right: Product Details */}
           <div className="space-y-6">
             {/* Product Info Card */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <div className="text-sm text-amazon-orange font-medium mb-2 uppercase tracking-wide">
-                {product.category.main} • {product.category.sub}
-              </div>
-              <h1 className="text-3xl font-bold mb-4 text-gray-900">{product.name}</h1>
-              
-              {/* Mock Rating */}
-              <div className="flex items-center gap-3 mb-4 pb-4 border-b">
-                <div className="flex items-center gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i} className={`text-lg ${i < 4 ? 'text-amazon-orange' : 'text-gray-300'}`}>★</span>
-                  ))}
+            <div className="glass-effect-strong depth-layer-3 rounded-2xl p-6 md:p-8 border border-white/20 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-primary opacity-5 blur-3xl"></div>
+              <div className="relative z-10">
+                <div className="inline-block mb-3">
+                  <div className="text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-gradient-primary text-white">
+                    {product.category.main} • {product.category.sub}
+                  </div>
                 </div>
-                <span className="text-sm text-blue-600 hover:text-amazon-orange cursor-pointer">
-                  124 ratings
-                </span>
-              </div>
-
-              <div className="mb-6">
-                <div className="text-sm text-gray-600 mb-1">Price:</div>
-                <div className="text-4xl font-bold text-amazon-dark">
-                  {formatPrice(product.price)}
-                </div>
-              </div>
-
-              {/* Availability */}
-              <div className="flex items-center gap-2 mb-4 text-lg">
-                <span className="text-green-700 font-semibold">In Stock</span>
-              </div>
+                <h1 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-industrial bg-clip-text text-transparent">{product.name}</h1>
               
-              {/* Seller Info */}
-              <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                <div className="flex items-center gap-2 text-sm mb-2">
-                  <span className="text-gray-600">Sold by:</span>
-                  <span className="font-semibold text-gray-900">{product.seller.name}</span>
-                  {product.seller.verified && (
-                    <span className="flex items-center gap-1 text-green-600 bg-green-50 px-2 py-0.5 rounded-full text-xs font-semibold">
-                      <BadgeCheck className="h-3 w-3" />
-                      Verified
+                {/* Mock Rating */}
+                <div className="flex items-center gap-3 mb-6 pb-6 border-b border-white/20">
+                  <div className="glass-effect px-4 py-2 rounded-lg inline-flex items-center gap-2 border border-white/10">
+                    <div className="flex items-center gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <span key={i} className={`text-lg ${i < 4 ? 'text-machine' : 'text-muted-foreground'}`}>★</span>
+                      ))}
+                    </div>
+                    <span className="text-sm text-muted-foreground font-medium">
+                      (124)
                     </span>
-                  )}
+                  </div>
                 </div>
-                <p className="text-xs text-gray-500">Ships from Accra, Ghana</p>
-              </div>
 
-              {/* Action Buttons */}
-              <div className="space-y-3">
-                <Button 
-                  size="lg" 
-                  className="w-full bg-amazon-orange hover:bg-amazon-hover text-white font-semibold text-base h-12"
-                  onClick={() => setRequestDialogOpen(true)}
-                >
-                  Request to Buy
-                </Button>
-                
-                <div className="grid grid-cols-2 gap-3">
-                  <Button size="lg" variant="outline" className="border-2" asChild>
-                    <a href="tel:+233XXXXXXXXX" className="flex items-center gap-2">
-                      <Phone className="h-5 w-5" />
-                      Call Us
-                    </a>
+                <div className="mb-6">
+                  <div className="text-sm text-muted-foreground mb-2">Price:</div>
+                  <div className="text-5xl font-bold bg-gradient-industrial bg-clip-text text-transparent">
+                    {formatPrice(product.price)}
+                  </div>
+                </div>
+
+                {/* Availability */}
+                <div className="inline-flex items-center gap-2 glass-effect px-4 py-2 rounded-lg border border-green-500/20 mb-6">
+                  <div className="h-2.5 w-2.5 rounded-full bg-green-400 animate-pulse-glow"></div>
+                  <span className="text-green-600 dark:text-green-400 font-semibold">In Stock</span>
+                </div>
+              
+                {/* Seller Info */}
+                <div className="glass-effect rounded-xl p-5 mb-6 border border-white/10">
+                  <div className="flex items-center gap-2 text-sm mb-2">
+                    <span className="text-muted-foreground">Sold by:</span>
+                    <span className="font-bold">{product.seller.name}</span>
+                    {product.seller.verified && (
+                      <span className="flex items-center gap-1.5 glass-effect-strong border border-green-500/20 px-2.5 py-1 rounded-full text-xs font-semibold">
+                        <BadgeCheck className="h-3.5 w-3.5 text-green-400" />
+                        <span className="bg-gradient-to-r from-green-400 to-emerald-300 bg-clip-text text-transparent">Verified</span>
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground">Ships from Accra, Ghana</p>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="space-y-3">
+                  <Button 
+                    size="lg" 
+                    variant="industrial"
+                    className="w-full font-bold text-base h-14 text-lg relative overflow-hidden group/btn"
+                    onClick={() => setRequestDialogOpen(true)}
+                  >
+                    <span className="relative z-10">Request to Buy</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700"></div>
                   </Button>
-                  <Button size="lg" variant="outline" className="border-2 border-green-600 text-green-600 hover:bg-green-50" asChild>
-                    <a 
-                      href="https://wa.me/233XXXXXXXXX" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2"
-                    >
-                      <MessageCircle className="h-5 w-5" />
-                      WhatsApp
-                    </a>
-                  </Button>
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    <Button size="lg" variant="outline" className="glass-effect border-white/20 hover:bg-primary/10 h-12" asChild>
+                      <a href="tel:+233XXXXXXXXX" className="flex items-center gap-2">
+                        <Phone className="h-5 w-5" />
+                        <span className="font-semibold">Call Us</span>
+                      </a>
+                    </Button>
+                    <Button size="lg" className="bg-gradient-to-r from-green-600 to-emerald-600 hover:shadow-lg hover:shadow-green-600/50 text-white h-12" asChild>
+                      <a 
+                        href="https://wa.me/233XXXXXXXXX" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2"
+                      >
+                        <MessageCircle className="h-5 w-5" />
+                        <span className="font-semibold">WhatsApp</span>
+                      </a>
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Description Card */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-xl font-bold mb-4 text-gray-900">About this item</h2>
-              <p className="text-gray-700 leading-relaxed">{product.description}</p>
+            <div className="glass-effect-strong depth-layer-2 rounded-2xl p-6 md:p-8 border border-white/20">
+              <h2 className="text-2xl font-bold mb-4 bg-gradient-primary bg-clip-text text-transparent">About this item</h2>
+              <p className="text-foreground leading-relaxed">{product.description}</p>
             </div>
 
             {/* Specifications Card */}
             {product.specs.length > 0 && (
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-xl font-bold mb-4 text-gray-900">Technical Specifications</h2>
-                <div className="divide-y">
+              <div className="glass-effect-strong depth-layer-2 rounded-2xl p-6 md:p-8 border border-white/20">
+                <h2 className="text-2xl font-bold mb-6 bg-gradient-primary bg-clip-text text-transparent">Technical Specifications</h2>
+                <div className="space-y-4">
                   {product.specs.map((spec, index) => (
-                    <div key={index} className="py-3 flex justify-between">
-                      <dt className="font-medium text-gray-700">{spec.key}</dt>
-                      <dd className="text-gray-900 font-semibold">{spec.value}</dd>
+                    <div key={index} className="glass-effect rounded-lg p-4 flex justify-between items-center border border-white/10 interactive-scale">
+                      <dt className="font-semibold text-muted-foreground">{spec.key}</dt>
+                      <dd className="font-bold text-foreground">{spec.value}</dd>
                     </div>
                   ))}
                 </div>
@@ -163,22 +181,25 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
             )}
 
             {/* Delivery Info */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-              <h3 className="font-semibold mb-3 text-gray-900">Delivery Information</h3>
-              <ul className="space-y-2 text-sm text-gray-700">
-                <li className="flex items-start gap-2">
-                  <span className="text-amazon-orange">✓</span>
-                  <span>Delivery available across Ghana</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-amazon-orange">✓</span>
-                  <span>Cash on Delivery option available</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-amazon-orange">✓</span>
-                  <span>Warranty and after-sales support</span>
-                </li>
-              </ul>
+            <div className="glass-effect-strong rounded-2xl p-6 md:p-8 border border-primary/20 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-primary opacity-10 blur-3xl"></div>
+              <div className="relative z-10">
+                <h3 className="font-bold text-xl mb-4 bg-gradient-primary bg-clip-text text-transparent">Delivery Information</h3>
+                <ul className="space-y-3 text-sm">
+                  <li className="flex items-start gap-3 glass-effect p-3 rounded-lg border border-white/10">
+                    <span className="text-machine text-xl">✓</span>
+                    <span className="font-medium">Delivery available across Ghana</span>
+                  </li>
+                  <li className="flex items-start gap-3 glass-effect p-3 rounded-lg border border-white/10">
+                    <span className="text-machine text-xl">✓</span>
+                    <span className="font-medium">Cash on Delivery option available</span>
+                  </li>
+                  <li className="flex items-start gap-3 glass-effect p-3 rounded-lg border border-white/10">
+                    <span className="text-machine text-xl">✓</span>
+                    <span className="font-medium">Warranty and after-sales support</span>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
