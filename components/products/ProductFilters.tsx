@@ -49,21 +49,21 @@ export default function ProductFilters({ onFilterChange }: ProductFiltersProps) 
     : null;
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border">
-      <h3 className="font-semibold text-lg mb-4">Filter Products</h3>
+    <div>
+      <h3 className="font-bold text-lg mb-4 bg-gradient-primary bg-clip-text text-transparent">Filter Products</h3>
       
       <div className="space-y-4">
         <div>
-          <label className="text-sm font-medium mb-2 block">Main Category</label>
+          <label className="text-sm font-semibold mb-2 block">Main Category</label>
           <Select value={mainCategory} onValueChange={handleMainCategoryChange}>
-            <SelectTrigger>
+            <SelectTrigger className="glass-effect border-white/20">
               <SelectValue placeholder="All Categories" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
               {Object.entries(CATEGORIES).map(([key, category]) => (
                 <SelectItem key={key} value={key}>
-                  {category.label}
+                  {category.emoji} {category.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -71,10 +71,10 @@ export default function ProductFilters({ onFilterChange }: ProductFiltersProps) 
         </div>
 
         {selectedMainCategory && (
-          <div>
-            <label className="text-sm font-medium mb-2 block">Sub Category</label>
+          <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+            <label className="text-sm font-semibold mb-2 block">Sub Category</label>
             <Select value={subCategory} onValueChange={handleSubCategoryChange}>
-              <SelectTrigger>
+              <SelectTrigger className="glass-effect border-white/20">
                 <SelectValue placeholder="All Subcategories" />
               </SelectTrigger>
               <SelectContent>
@@ -93,7 +93,7 @@ export default function ProductFilters({ onFilterChange }: ProductFiltersProps) 
           <Button 
             variant="outline" 
             onClick={handleClearFilters}
-            className="w-full"
+            className="w-full glass-effect border-white/20 hover:bg-primary/10"
           >
             Clear Filters
           </Button>

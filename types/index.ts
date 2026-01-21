@@ -56,6 +56,7 @@ export interface Testimonial {
 export const CATEGORIES = {
   machines: {
     label: "Machines",
+    emoji: "🏗️",
     subcategories: [
       "Agricultural Machinery",
       "Construction Equipment",
@@ -66,22 +67,59 @@ export const CATEGORIES = {
   },
   vehicles: {
     label: "Vehicles",
+    emoji: "🚗",
     subcategories: [
+      "Motorbikes",
+      "Tricycles",
+      "Cars & SUVs",
       "Trucks",
       "Buses",
       "Vans",
-      "Heavy Duty Vehicles",
-      "Commercial Vehicles"
+      "Heavy Duty Vehicles"
+    ]
+  },
+  equipment: {
+    label: "Equipment",
+    emoji: "⚙️",
+    subcategories: [
+      "Lifting Equipment",
+      "Material Handling",
+      "Welding Equipment",
+      "Compressors",
+      "Workshop Tools"
     ]
   },
   parts: {
-    label: "Parts & Accessories",
+    label: "Parts",
+    emoji: "🔧",
     subcategories: [
       "Engine Parts",
       "Body Parts",
       "Electrical Components",
       "Hydraulic Systems",
       "Tires & Wheels"
+    ]
+  },
+  tools: {
+    label: "Tools",
+    emoji: "🔨",
+    subcategories: [
+      "Hand Tools",
+      "Power Tools",
+      "Measuring Tools",
+      "Cutting Tools",
+      "Safety Equipment"
+    ]
+  },
+  accessories: {
+    label: "Accessories",
+    emoji: "📦",
+    subcategories: [
+      "Attachments",
+      "Storage Solutions",
+      "Protective Gear",
+      "Maintenance Supplies",
+      "Spare Parts"
     ]
   }
 };

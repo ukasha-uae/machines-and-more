@@ -1,21 +1,24 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Product } from '@/types';
+import { Product, CATEGORIES } from '@/types';
 import { getAllProducts, getProductsByCategory } from '@/lib/firebase/firestore';
 import HeroCarousel from '@/components/home/HeroCarousel';
 import ProductFilters from '@/components/products/ProductFilters';
 import ProductCard from '@/components/products/ProductCard';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ChevronRight, ArrowLeft } from 'lucide-react';
 import { useSearch } from '@/contexts/SearchContext';
+import { Button } from '@/components/ui/button';
 
 export default function HomePage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const { searchQuery } = useSearch();
+  const { searchQuery, setSearchQuery } = useSearch();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(null);
+  const [showSubcategories, setShowSubcategories] = useState(false);
 
   useEffect(() => {
     loadProducts();
@@ -23,7 +26,7 @@ export default function HomePage() {
 
   useEffect(() => {
     filterProducts();
-  }, [products, searchQuery, selectedCategory]);
+  }, [products, searchQuery, selectedCategory, selectedSubCategory]);
 
   const loadProducts = async () => {
     try {
@@ -51,6 +54,11 @@ export default function HomePage() {
       filtered = filtered.filter(p => p.category.main === selectedCategory);
     }
 
+    // Filter by subcategory
+    if (selectedSubCategory) {
+      filtered = filtered.filter(p => p.category.sub === selectedSubCategory);
+    }
+
     // Filter by search query
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
@@ -68,10 +76,29 @@ export default function HomePage() {
 
   const handleCategoryClick = (category: string) => {
     if (selectedCategory === category) {
-      setSelectedCategory(null); // Unselect if clicking the same category
+      // Unselect if clicking the same category
+      setSelectedCategory(null);
+      setSelectedSubCategory(null);
+      setShowSubcategories(false);
     } else {
       setSelectedCategory(category);
+      setSelectedSubCategory(null);
+      setShowSubcategories(true);
     }
+  };
+
+  const handleSubCategoryClick = (subCategory: string) => {
+    if (selectedSubCategory === subCategory) {
+      setSelectedSubCategory(null);
+    } else {
+      setSelectedSubCategory(subCategory);
+    }
+  };
+
+  const handleBackToCategories = () => {
+    setShowSubcategories(false);
+    setSelectedCategory(null);
+    setSelectedSubCategory(null);
   };
 
   const handleFilterChange = async (filters: { mainCategory?: string; subCategory?: string }) => {
@@ -102,39 +129,77 @@ export default function HomePage() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-bold mb-3 bg-gradient-primary bg-clip-text text-transparent">
-              Shop by Category
+              {showSubcategories ? `${selectedCategory}` : 'Shop by Category'}
             </h2>
-            <p className="text-muted-foreground">Explore our extensive range of industrial machinery</p>
+            <p className="text-muted-foreground">
+              {showSubcategories 
+                ? `Choose a specific ${selectedCategory?.toLowerCase()} type` 
+                : 'Explore our extensive range of industrial machinery'}
+            </p>
           </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {[
-              { name: 'Machines', emoji: '🏗️', gradient: 'from-primary/20 to-secondary/20' },
-              { name: 'Vehicles', emoji: '🚗', gradient: 'from-secondary/20 to-accent/20' },
-              { name: 'Equipment', emoji: '⚙️', gradient: 'from-accent/20 to-industrial/20' },
-              { name: 'Parts', emoji: '🔧', gradient: 'from-industrial/20 to-primary/20' },
-              { name: 'Tools', emoji: '🔨', gradient: 'from-primary/20 to-accent/20' },
-              { name: 'Accessories', emoji: '📦', gradient: 'from-secondary/20 to-industrial/20' },
-            ].map((category, index) => (
-              <button
-                key={category.name}
-                onClick={() => handleCategoryClick(category.name)}
-                className={`glass-effect depth-layer-2 rounded-2xl p-6 interactive-lift cursor-pointer text-center border transition-all duration-500 ${
-                  selectedCategory === category.name
-                    ? 'border-primary/50 bg-gradient-primary/10 scale-105'
-                    : 'border-white/20 hover:border-primary/30'
-                } ${index % 2 === 0 ? 'animate-pulse-glow' : 'animate-pulse-glow-delay-1'}`}
+
+          {/* Back button when showing subcategories */}
+          {showSubcategories && (
+            <div className="mb-6 animate-in fade-in slide-in-from-left-2 duration-300">
+              <Button
+                onClick={handleBackToCategories}
+                variant="outline"
+                className="glass-effect border-white/20"
               >
-                <div className="text-5xl mb-3 animate-float">{category.emoji}</div>
-                <h3 className="font-bold text-sm bg-gradient-to-br ${category.gradient} bg-clip-text">{category.name}</h3>
-              </button>
-            ))}
-          </div>
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Categories
+              </Button>
+            </div>
+          )}
           
-          {selectedCategory && (
+          {!showSubcategories ? (
+            // Main Categories
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {Object.entries(CATEGORIES).map(([key, category], index) => (
+                <button
+                  key={key}
+                  onClick={() => handleCategoryClick(category.label)}
+                  className={`glass-effect depth-layer-2 rounded-2xl p-6 interactive-lift cursor-pointer text-center border transition-all duration-500 border-white/20 hover:border-primary/30 ${
+                    index % 2 === 0 ? 'animate-pulse-glow' : 'animate-pulse-glow-delay-1'
+                  }`}
+                >
+                  <div className="text-5xl mb-3 animate-float">{category.emoji}</div>
+                  <h3 className="font-bold text-sm">{category.label}</h3>
+                </button>
+              ))}
+            </div>
+          ) : (
+            // Subcategories for selected category
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 animate-in fade-in slide-in-from-right-2 duration-500">
+              {Object.entries(CATEGORIES)
+                .find(([key, cat]) => cat.label === selectedCategory)?.[1]
+                ?.subcategories.map((subCategory, index) => (
+                  <button
+                    key={subCategory}
+                    onClick={() => handleSubCategoryClick(subCategory)}
+                    className={`glass-effect depth-layer-2 rounded-xl p-5 interactive-lift cursor-pointer text-left border transition-all duration-500 ${
+                      selectedSubCategory === subCategory
+                        ? 'border-primary/50 bg-gradient-primary/10 scale-105'
+                        : 'border-white/20 hover:border-primary/30'
+                    }`}
+                    style={{ animationDelay: `${index * 50}ms` }}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-bold text-base">{subCategory}</h3>
+                      <ChevronRight className="h-5 w-5 text-primary" />
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {products.filter(p => p.category.main === selectedCategory && p.category.sub === subCategory).length} products
+                    </p>
+                  </button>
+                )) || []}
+            </div>
+          )}
+          
+          {(selectedCategory || selectedSubCategory) && !showSubcategories && (
             <div className="mt-6 text-center animate-in fade-in slide-in-from-top-2 duration-300">
               <button
-                onClick={() => setSelectedCategory(null)}
+                onClick={handleBackToCategories}
                 className="glass-effect px-6 py-2 rounded-full text-sm font-medium border border-primary/30 hover:bg-primary/10 interactive-scale"
               >
                 ✕ Clear filter
@@ -150,11 +215,17 @@ export default function HomePage() {
           <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-primary opacity-10 blur-3xl rounded-full"></div>
           <div className="relative z-10">
             <h2 className="text-2xl md:text-3xl font-bold bg-gradient-industrial bg-clip-text text-transparent">
-              Browse Our Products
+              {selectedSubCategory 
+                ? selectedSubCategory
+                : selectedCategory 
+                ? `All ${selectedCategory}` 
+                : 'Browse Our Products'}
             </h2>
             <p className="text-muted-foreground mt-2 text-sm md:text-base">
-              {selectedCategory
-                ? `Showing ${filteredProducts.length} ${selectedCategory} products`
+              {selectedSubCategory
+                ? `Showing ${filteredProducts.length} ${selectedSubCategory.toLowerCase()} in ${selectedCategory}`
+                : selectedCategory
+                ? `Showing ${filteredProducts.length} ${selectedCategory.toLowerCase()} products`
                 : searchQuery
                 ? `Found ${filteredProducts.length} products matching "${searchQuery}"`
                 : `Find the best machinery and equipment in Ghana (${filteredProducts.length} products)`}
@@ -182,11 +253,13 @@ export default function HomePage() {
                 <div className="text-6xl mb-4 opacity-50">🔍</div>
                 <p className="text-lg font-semibold mb-2">No products found</p>
                 <p className="text-muted-foreground mb-4">Try adjusting your search or filters</p>
-                {(searchQuery || selectedCategory) && (
+                {(searchQuery || selectedCategory || selectedSubCategory) && (
                   <button
                     onClick={() => {
                       setSearchQuery('');
                       setSelectedCategory(null);
+                      setSelectedSubCategory(null);
+                      setShowSubcategories(false);
                     }}
                     className="glass-effect px-6 py-2.5 rounded-lg font-medium border border-primary/30 hover:bg-primary/10 interactive-scale"
                   >
