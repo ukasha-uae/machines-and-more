@@ -12,4 +12,11 @@ export const db = getFirestore(app);
 export const storage = getStorage(app);
 export const auth = getAuth(app);
 
+// Log initialization status
+if (typeof window !== 'undefined') {
+  console.log('🔥 Firebase initialized');
+  console.log('📦 Storage bucket:', firebaseConfig.storageBucket);
+  console.log('🗄️ Project ID:', firebaseConfig.projectId);
+}
+
 export default app;
