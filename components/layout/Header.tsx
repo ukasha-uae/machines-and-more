@@ -17,6 +17,7 @@ export default function Header() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setSearchQuery(localSearch);
+    setMobileMenuOpen(false); // Close mobile menu when searching
     router.push('/');
   };
 
@@ -178,30 +179,35 @@ export default function Header() {
             <Link 
               href="/" 
               className="text-sm font-medium py-3 px-4 rounded-lg hover:bg-gradient-to-r hover:from-primary/10 hover:to-secondary/10 transition-all duration-300 interactive-scale"
+              onClick={() => setMobileMenuOpen(false)}
             >
               All Products
             </Link>
             <Link 
               href="/testimonials" 
               className="text-sm font-medium py-3 px-4 rounded-lg hover:bg-gradient-to-r hover:from-secondary/10 hover:to-accent/10 transition-all duration-300 interactive-scale"
+              onClick={() => setMobileMenuOpen(false)}
             >
               Testimonials
             </Link>
             <Link 
               href="/delivery-terms" 
               className="text-sm font-medium py-3 px-4 rounded-lg hover:bg-gradient-to-r hover:from-accent/10 hover:to-industrial/10 transition-all duration-300 interactive-scale"
+              onClick={() => setMobileMenuOpen(false)}
             >
               Delivery & Terms
             </Link>
             <Link 
               href="/contact" 
               className="text-sm font-medium py-3 px-4 rounded-lg hover:bg-gradient-to-r hover:from-industrial/10 hover:to-primary/10 transition-all duration-300 interactive-scale"
+              onClick={() => setMobileMenuOpen(false)}
             >
               Contact Us
             </Link>
             <Link 
               href="/admin" 
               className="text-sm font-medium py-3 px-4 rounded-lg hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10 transition-all duration-300 interactive-scale"
+              onClick={() => setMobileMenuOpen(false)}
             >
               Seller Portal
             </Link>
