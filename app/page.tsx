@@ -125,7 +125,6 @@ export default function HomePage() {
 
       {/* Featured Categories - Neo-glassmorphic cards */}
       <section className="relative py-12 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-bold mb-3 bg-gradient-primary bg-clip-text text-transparent">
@@ -159,11 +158,9 @@ export default function HomePage() {
                 <button
                   key={key}
                   onClick={() => handleCategoryClick(category.label)}
-                  className={`glass-effect depth-layer-2 rounded-2xl p-6 interactive-lift cursor-pointer text-center border transition-all duration-500 border-white/20 hover:border-primary/30 ${
-                    index % 2 === 0 ? 'animate-pulse-glow' : 'animate-pulse-glow-delay-1'
-                  }`}
+                  className="glass-effect depth-layer-1 rounded-2xl p-6 interactive-lift cursor-pointer text-center border transition-all duration-300 border-white/20 hover:border-primary/30"
                 >
-                  <div className="text-5xl mb-3 animate-float">{category.emoji}</div>
+                  <div className="text-5xl mb-3">{category.emoji}</div>
                   <h3 className="font-bold text-sm">{category.label}</h3>
                 </button>
               ))}
