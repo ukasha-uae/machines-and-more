@@ -29,7 +29,8 @@ export default function ImageUploader({ productId, images, onChange }: ImageUplo
     const files = e.target.files;
     if (!files) return;
 
-    const newImages = Array.from(files).map((file, index) => ({
+    // Create initial image placeholders
+    const newImages: UploadedImage[] = Array.from(files).map((file, index) => ({
       url: URL.createObjectURL(file),
       path: '',
       order: images.length + index,
@@ -37,23 +38,31 @@ export default function ImageUploader({ productId, images, onChange }: ImageUplo
       progress: 0,
     }));
 
-    onChange([...images, ...newImages]);
+    // Update state with placeholders
+    let currentImages = [...images, ...newImages];
+    onChange(currentImages);
 
-    // Upload files
+    // Upload files one by one
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const imageIndex = images.length + i;
 
       try {
         const result = await uploadProductImage(file, productId, (progress) => {
-          const updatedImages = [...images];
+          // Update progress for this specific image
+          const updatedImages = [...currentImages];
           if (updatedImages[imageIndex]) {
-            updatedImages[imageIndex].progress = progress;
+            updatedImages[imageIndex] = {
+              ...updatedImages[imageIndex],
+              progress,
+            };
+            currentImages = updatedImages;
             onChange(updatedImages);
           }
         });
 
-        const updatedImages = [...images];
+        // Update with final uploaded image
+        const updatedImages = [...currentImages];
         if (updatedImages[imageIndex]) {
           updatedImages[imageIndex] = {
             url: result.url,
@@ -61,12 +70,16 @@ export default function ImageUploader({ productId, images, onChange }: ImageUplo
             order: imageIndex,
             uploading: false,
           };
+          currentImages = updatedImages;
           onChange(updatedImages);
         }
       } catch (error) {
         console.error('Upload failed:', error);
         // Remove failed upload
-        const updatedImages = images.filter((_, idx) => idx !== imageIndex);
+        const updatedImages = currentImages
+          .filter((_, idx) => idx !== imageIndex)
+          .map((img, i) => ({ ...img, order: i }));
+        currentImages = updatedImages;
         onChange(updatedImages);
       }
     }
