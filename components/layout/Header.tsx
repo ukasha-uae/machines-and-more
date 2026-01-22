@@ -24,13 +24,13 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full">
       {/* Glassmorphic backdrop with gradient overlay */}
       <div className="glass-effect-strong border-b border-white/10">
-        {/* Top Bar - Gradient accent */}
-        <div className="relative overflow-hidden">
+        {/* Top Bar - Gradient accent (hidden on mobile) */}
+        <div className="relative overflow-hidden hidden md:block">
           <div className="absolute inset-0 bg-gradient-primary opacity-90"></div>
           <div className="absolute inset-0 gradient-mesh"></div>
           
           <div className="container mx-auto px-4 relative">
-            <div className="flex items-center justify-between h-10 text-sm text-white/90">
+            <div className="flex items-center justify-between h-8 text-xs text-white/90">
               <div className="flex items-center gap-2 interactive-scale">
                 <MapPin className="h-4 w-4 animate-pulse-glow" />
                 <span className="font-medium">Available across <strong className="text-machine">Ghana</strong></span>
@@ -50,10 +50,10 @@ export default function Header() {
         {/* Main Header - Neo-glassmorphic surface */}
         <div className="relative bg-gradient-to-br from-primary/10 via-secondary/5 to-accent/10">
           <div className="container mx-auto px-4">
-            <div className="flex items-center gap-4 py-4">
+            <div className="flex items-center gap-2 md:gap-4 py-2 md:py-3">
               {/* Logo with glow effect */}
               <Link href="/" className="flex items-center shrink-0 group">
-                <div className="text-xl md:text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent animate-pulse-glow">
+                <div className="text-base md:text-xl lg:text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent animate-pulse-glow">
                   Machines <span className="text-machine animate-pulse-glow-delay-1">&</span> More
                 </div>
               </Link>
@@ -67,13 +67,13 @@ export default function Header() {
                       placeholder="Search for machinery, vehicles, equipment..."
                       value={localSearch}
                       onChange={(e) => setLocalSearch(e.target.value)}
-                      className="w-full h-12 pr-14 bg-white/50 dark:bg-black/20 backdrop-blur-xl border-0 focus-visible:ring-2 focus-visible:ring-primary/50 transition-all duration-300"
+                      className="w-full h-10 pr-12 bg-white/50 dark:bg-black/20 backdrop-blur-xl border-0 focus-visible:ring-2 focus-visible:ring-primary/50 transition-all duration-300"
                     />
                     <Button
                       type="submit"
                       size="sm"
-                      className="absolute right-1 top-1 h-10 px-4 bg-gradient-primary hover:shadow-lg hover:shadow-primary/50 text-white rounded-lg transition-all duration-300 interactive-scale"
-                    >
+                      className="absolute right-1 top-1 h-8 px-3 bg-gradient-primary hover:shadow-lg hover:shadow-primary/50 text-white rounded-lg transition-all duration-300 interactive-scale">
+                      <Search className="h-4 w-4" />
                       <Search className="h-5 w-5" />
                     </Button>
                   </div>
@@ -115,7 +115,7 @@ export default function Header() {
             </div>
 
             {/* Mobile Search */}
-            <div className="md:hidden pb-3">
+            <div className="md:hidden pb-2">
               <form onSubmit={handleSearch} className="relative w-full group">
                 <div className="glass-effect rounded-lg overflow-hidden depth-layer-1">
                   <Input
@@ -123,13 +123,13 @@ export default function Header() {
                     placeholder="Search products..."
                     value={localSearch}
                     onChange={(e) => setLocalSearch(e.target.value)}
-                    className="w-full h-11 pr-12 bg-white/50 dark:bg-black/20 backdrop-blur-xl border-0"
+                    className="w-full h-9 pr-11 text-sm bg-white/50 dark:bg-black/20 backdrop-blur-xl border-0"
                   />
                   <Button
                     type="submit"
                     size="sm"
-                    className="absolute right-1 top-1 h-9 px-3 bg-gradient-primary text-white rounded-md interactive-scale"
-                  >
+                    className="absolute right-1 top-1 h-7 px-2.5 bg-gradient-primary text-white rounded-md interactive-scale">
+                    <Search className="h-3.5 w-3.5" />
                     <Search className="h-4 w-4" />
                   </Button>
                 </div>
@@ -142,7 +142,7 @@ export default function Header() {
       {/* Navigation Bar - Glassmorphic nav */}
       <div className="relative border-t border-white/10 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5">
         <div className="container mx-auto px-4">
-          <nav className="hidden md:flex items-center h-12 space-x-6 text-sm font-medium">
+          <nav className="hidden md:flex items-center h-10 space-x-4 lg:space-x-6 text-xs lg:text-sm font-medium">
             <Link href="/" className="relative group py-3">
               <span className="relative z-10 transition-colors duration-300 group-hover:text-primary">
                 All Products
