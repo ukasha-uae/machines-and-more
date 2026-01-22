@@ -314,10 +314,10 @@ export default function HomePage() {
                 <span className="text-4xl">🚚</span>
               </div>
               <h3 className="font-bold text-xl mb-3 bg-gradient-to-r from-secondary to-accent bg-clip-text text-transparent">
-                Nationwide Delivery
+                Ghana-Wide Coverage
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                We deliver across Ghana with tracked shipping to get your equipment to you safely
+                Local delivery to all major regions in Ghana - pre-imported quality equipment ready for you
               </p>
             </div>
             

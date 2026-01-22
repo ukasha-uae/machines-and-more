@@ -184,19 +184,35 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
             <div className="glass-effect-strong rounded-2xl p-6 md:p-8 border border-primary/20 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-primary opacity-10 blur-3xl"></div>
               <div className="relative z-10">
-                <h3 className="font-bold text-xl mb-4 bg-gradient-primary bg-clip-text text-transparent">Delivery Information</h3>
+                <h3 className="font-bold text-xl mb-4 bg-gradient-primary bg-clip-text text-transparent">Delivery & Service</h3>
                 <ul className="space-y-3 text-sm">
                   <li className="flex items-start gap-3 glass-effect p-3 rounded-lg border border-white/10">
                     <span className="text-machine text-xl">✓</span>
-                    <span className="font-medium">Delivery available across Ghana</span>
+                    <div>
+                      <span className="font-medium block">Available across Ghana</span>
+                      <span className="text-xs text-muted-foreground">Local delivery to major cities and regions</span>
+                    </div>
                   </li>
                   <li className="flex items-start gap-3 glass-effect p-3 rounded-lg border border-white/10">
                     <span className="text-machine text-xl">✓</span>
-                    <span className="font-medium">Cash on Delivery option available</span>
+                    <div>
+                      <span className="font-medium block">Flexible Payment Options</span>
+                      <span className="text-xs text-muted-foreground">Cash on delivery, bank transfer, mobile money</span>
+                    </div>
                   </li>
                   <li className="flex items-start gap-3 glass-effect p-3 rounded-lg border border-white/10">
                     <span className="text-machine text-xl">✓</span>
-                    <span className="font-medium">Warranty and after-sales support</span>
+                    <div>
+                      <span className="font-medium block">Quality Assurance</span>
+                      <span className="text-xs text-muted-foreground">Warranty and after-sales support included</span>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3 glass-effect p-3 rounded-lg border border-white/10">
+                    <span className="text-machine text-xl">✓</span>
+                    <div>
+                      <span className="font-medium block">Imported Quality Products</span>
+                      <span className="text-xs text-muted-foreground">All items pre-imported and inspected in Ghana</span>
+                    </div>
                   </li>
                 </ul>
               </div>

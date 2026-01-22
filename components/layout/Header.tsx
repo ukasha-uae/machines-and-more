@@ -33,7 +33,7 @@ export default function Header() {
             <div className="flex items-center justify-between h-10 text-sm text-white/90">
               <div className="flex items-center gap-2 interactive-scale">
                 <MapPin className="h-4 w-4 animate-pulse-glow" />
-                <span className="font-medium">Deliver to <strong className="text-machine">Ghana</strong></span>
+                <span className="font-medium">Available across <strong className="text-machine">Ghana</strong></span>
               </div>
               <div className="hidden md:flex items-center gap-6">
                 <Link href="/contact" className="hover:text-machine transition-all duration-300 interactive-scale">
