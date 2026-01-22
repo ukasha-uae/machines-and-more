@@ -82,39 +82,44 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-12">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Admin Dashboard</h1>
-          <p className="text-gray-600">Manage products and inventory</p>
+    <div className="min-h-screen bg-gradient-mesh relative">
+      {/* Gradient overlay */}
+      <div className="fixed inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 pointer-events-none" />
+      
+      <div className="container mx-auto px-4 py-8 md:py-12 relative z-10">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2 bg-gradient-primary bg-clip-text text-transparent">
+            Seller Portal
+          </h1>
+          <p className="text-muted-foreground">Manage your products and inventory</p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <Card>
+        <div className="grid md:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
+          <Card className="glass-effect-strong depth-layer-1 border-0 interactive-scale">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-gray-600">Total Products</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Products</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-amazon-dark">{products.length}</p>
+              <p className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">{products.length}</p>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="glass-effect-strong depth-layer-1 border-0 interactive-scale">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-gray-600">Categories</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Categories</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-amazon-dark">
+              <p className="text-3xl font-bold bg-gradient-industrial bg-clip-text text-transparent">
                 {new Set(products.map(p => p.category.main)).size}
               </p>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="glass-effect-strong depth-layer-1 border-0 interactive-scale">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-gray-600">Verified Sellers</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Verified Sellers</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-amazon-dark">
+              <p className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
                 {products.filter(p => p.seller.verified).length}
               </p>
             </CardContent>
@@ -122,8 +127,8 @@ export default function AdminPage() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-wrap gap-4 mb-8">
-          <Button size="lg" className="bg-amazon-orange hover:bg-amazon-hover" asChild>
+        <div className="flex flex-wrap gap-3 md:gap-4 mb-6 md:mb-8">
+          <Button size="lg" className="gradient-primary text-white interactive-glow" asChild>
             <Link href="/admin/add-product" className="flex items-center gap-2">
               <Plus className="h-5 w-5" />
               Add New Product
@@ -132,6 +137,7 @@ export default function AdminPage() {
           <Button 
             size="lg" 
             variant="outline"
+            className="glass-effect interactive-scale"
             asChild
           >
             <Link href="/admin/seed" className="flex items-center gap-2">
@@ -142,29 +148,31 @@ export default function AdminPage() {
         </div>
 
         {/* Products Table */}
-        <Card>
+        <Card className="glass-effect-strong depth-layer-1 border-0">
           <CardHeader>
-            <CardTitle>All Products ({products.length})</CardTitle>
+            <CardTitle className="bg-gradient-primary bg-clip-text text-transparent">
+              All Products ({products.length})
+            </CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (
               <div className="flex items-center justify-center h-64">
-                <Loader2 className="h-8 w-8 animate-spin text-amazon-orange" />
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
               </div>
             ) : products.length === 0 ? (
               <div className="text-center py-12">
-                <Database className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-lg text-gray-600 mb-2 font-semibold">
+                <Database className="h-16 w-16 text-muted-foreground/30 mx-auto mb-4" />
+                <p className="text-lg font-semibold mb-2">
                   No products found
                 </p>
-                <p className="text-gray-500 mb-4">
+                <p className="text-muted-foreground mb-4">
                   Get started by adding products or seeding the database
                 </p>
                 <div className="flex gap-3 justify-center">
-                  <Button variant="outline" asChild>
+                  <Button variant="outline" className="glass-effect" asChild>
                     <Link href="/admin/seed">Seed Database</Link>
                   </Button>
-                  <Button className="bg-amazon-orange hover:bg-amazon-hover" asChild>
+                  <Button className="gradient-primary text-white" asChild>
                     <Link href="/admin/add-product">Add Product</Link>
                   </Button>
                 </div>
@@ -183,11 +191,11 @@ export default function AdminPage() {
                   </TableHeader>
                   <TableBody>
                     {products.map((product) => (
-                      <TableRow key={product.id}>
+                      <TableRow key={product.id} className="hover:bg-white/5">
                         <TableCell className="font-medium">
                           <Link 
                             href={`/products/${product.slug}`}
-                            className="hover:text-amazon-orange transition-colors"
+                            className="hover:text-primary transition-colors"
                           >
                             {product.name}
                           </Link>

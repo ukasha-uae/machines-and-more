@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { notFound } from 'next/navigation';
 import { Product } from '@/types';
 import { getProductBySlug } from '@/lib/firebase/firestore';
+import { getStockStatusDisplay, getConditionDisplay } from '@/lib/product-helpers';
 import ImageGallery from '@/components/products/ImageGallery';
 import RequestBuyDialog from '@/components/products/RequestBuyDialog';
 import AiResponseDialog from '@/components/products/AiResponseDialog';
@@ -103,10 +104,35 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                   </div>
                 </div>
 
-                {/* Availability */}
-                <div className="inline-flex items-center gap-2 glass-effect px-4 py-2 rounded-lg border border-green-500/20 mb-6">
-                  <div className="h-2.5 w-2.5 rounded-full bg-green-400 animate-pulse-glow"></div>
-                  <span className="text-green-600 dark:text-green-400 font-semibold">In Stock</span>
+                {/* Availability & Condition */}
+                <div className="flex flex-wrap gap-3 mb-6">
+                  <div className={`inline-flex items-center gap-2 glass-effect px-4 py-2 rounded-lg border ${
+                    product.stockStatus === 'in-stock' ? 'border-green-500/20' :
+                    product.stockStatus === 'limited' ? 'border-amber-500/20' :
+                    product.stockStatus === 'on-order' ? 'border-blue-500/20' :
+                    'border-red-500/20'
+                  }`}>
+                    <div className={`h-2.5 w-2.5 rounded-full ${
+                      product.stockStatus === 'in-stock' ? 'bg-green-400 animate-pulse-glow' :
+                      product.stockStatus === 'limited' ? 'bg-amber-400 animate-pulse-glow' :
+                      product.stockStatus === 'on-order' ? 'bg-blue-400' :
+                      'bg-red-400'
+                    }`}></div>
+                    <span className={`font-semibold ${
+                      product.stockStatus === 'in-stock' ? 'text-green-600 dark:text-green-400' :
+                      product.stockStatus === 'limited' ? 'text-amber-600 dark:text-amber-400' :
+                      product.stockStatus === 'on-order' ? 'text-blue-600 dark:text-blue-400' :
+                      'text-red-600 dark:text-red-400'
+                    }`}>
+                      {getStockStatusDisplay(product.stockStatus).label}
+                    </span>
+                  </div>
+                  
+                  <div className="inline-flex items-center gap-2 glass-effect px-4 py-2 rounded-lg border border-white/10">
+                    <span className="font-semibold text-foreground">
+                      {getConditionDisplay(product.condition).label}
+                    </span>
+                  </div>
                 </div>
               
                 {/* Seller Info */}
@@ -121,7 +147,19 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground">Ships from Accra, Ghana</p>
+                  <p className="text-xs text-muted-foreground">
+                    📍 Product located in {product.productLocation}
+                  </p>
+                  {(product.seller.contactPhone || product.seller.contactEmail) && (
+                    <div className="mt-3 pt-3 border-t border-white/10 space-y-1">
+                      {product.seller.contactPhone && (
+                        <p className="text-xs text-muted-foreground">📞 {product.seller.contactPhone}</p>
+                      )}
+                      {product.seller.contactEmail && (
+                        <p className="text-xs text-muted-foreground">✉️ {product.seller.contactEmail}</p>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Action Buttons */}
@@ -185,33 +223,55 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
               <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-primary opacity-10 blur-3xl"></div>
               <div className="relative z-10">
                 <h3 className="font-bold text-xl mb-4 bg-gradient-primary bg-clip-text text-transparent">Delivery & Service</h3>
+                
+                {product.deliveryFeeEstimate && (
+                  <div className="glass-effect-strong rounded-xl p-4 mb-4 border border-machine/20">
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground text-sm">Estimated Delivery Fee:</span>
+                      <span className="text-xl font-bold bg-gradient-industrial bg-clip-text text-transparent">
+                        {formatPrice(product.deliveryFeeEstimate)}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      📍 Base fee from {product.productLocation} to Accra. Final cost varies by destination.
+                    </p>
+                  </div>
+                )}
+
+                {product.deliveryNotes && (
+                  <div className="glass-effect rounded-xl p-4 mb-4 border border-amber-500/20">
+                    <p className="text-sm font-medium mb-1">⚠️ Delivery Notes:</p>
+                    <p className="text-sm text-muted-foreground">{product.deliveryNotes}</p>
+                  </div>
+                )}
+                
                 <ul className="space-y-3 text-sm">
                   <li className="flex items-start gap-3 glass-effect p-3 rounded-lg border border-white/10">
                     <span className="text-machine text-xl">✓</span>
                     <div>
                       <span className="font-medium block">Available across Ghana</span>
-                      <span className="text-xs text-muted-foreground">Local delivery to major cities and regions</span>
+                      <span className="text-xs text-muted-foreground">We deliver to major cities and regions. Buyer pays delivery fee.</span>
                     </div>
                   </li>
                   <li className="flex items-start gap-3 glass-effect p-3 rounded-lg border border-white/10">
                     <span className="text-machine text-xl">✓</span>
                     <div>
                       <span className="font-medium block">Flexible Payment Options</span>
-                      <span className="text-xs text-muted-foreground">Cash on delivery, bank transfer, mobile money</span>
+                      <span className="text-xs text-muted-foreground">Cash on delivery, bank transfer, mobile money (MTN, Vodafone, AirtelTigo)</span>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3 glass-effect p-3 rounded-lg border border-white/10">
+                    <span className="text-machine text-xl">✓</span>
+                    <div>
+                      <span className="font-medium block">Pickup Available</span>
+                      <span className="text-xs text-muted-foreground">Product located in {product.productLocation}. Contact seller for pickup arrangements.</span>
                     </div>
                   </li>
                   <li className="flex items-start gap-3 glass-effect p-3 rounded-lg border border-white/10">
                     <span className="text-machine text-xl">✓</span>
                     <div>
                       <span className="font-medium block">Quality Assurance</span>
-                      <span className="text-xs text-muted-foreground">Warranty and after-sales support included</span>
-                    </div>
-                  </li>
-                  <li className="flex items-start gap-3 glass-effect p-3 rounded-lg border border-white/10">
-                    <span className="text-machine text-xl">✓</span>
-                    <div>
-                      <span className="font-medium block">Imported Quality Products</span>
-                      <span className="text-xs text-muted-foreground">All items pre-imported and inspected in Ghana</span>
+                      <span className="text-xs text-muted-foreground">Warranty and after-sales support included from verified sellers</span>
                     </div>
                   </li>
                 </ul>

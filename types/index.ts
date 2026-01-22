@@ -6,6 +6,8 @@ export interface Category {
 export interface Seller {
   name: string;
   verified: boolean;
+  contactPhone?: string;
+  contactEmail?: string;
 }
 
 export interface ImageGallery {
@@ -31,6 +33,12 @@ export interface Product {
   gallery: ImageGallery[];
   specs: Specification[];
   createdAt: string;
+  // Marketplace & Delivery Info
+  productLocation: string; // Where the product is currently located
+  stockStatus: 'in-stock' | 'limited' | 'on-order' | 'out-of-stock';
+  condition: 'new' | 'used-like-new' | 'used-good' | 'used-fair';
+  deliveryFeeEstimate?: number; // Base delivery fee in GHS
+  deliveryNotes?: string; // Additional delivery info
 }
 
 export interface PurchaseRequest {

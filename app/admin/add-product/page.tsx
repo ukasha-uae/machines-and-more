@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { CATEGORIES } from '@/types';
+import { GHANA_REGIONS, STOCK_STATUS, PRODUCT_CONDITION } from '@/types/locations';
 import { addProduct } from '@/lib/firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,6 +42,13 @@ export default function AddProductPage() {
     description: '',
     sellerName: '',
     sellerVerified: true,
+    sellerContactPhone: '',
+    sellerContactEmail: '',
+    productLocation: '',
+    stockStatus: 'in-stock' as const,
+    condition: 'new' as const,
+    deliveryFeeEstimate: '',
+    deliveryNotes: '',
   });
 
   const [images, setImages] = useState<UploadedImage[]>([]);
@@ -81,6 +89,15 @@ export default function AddProductPage() {
       return;
     }
 
+    if (!formData.productLocation) {
+      toast({
+        title: 'Error',
+        description: 'Please select product location',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -99,10 +116,17 @@ export default function AddProductPage() {
         seller: {
           name: formData.sellerName,
           verified: formData.sellerVerified,
+          contactPhone: formData.sellerContactPhone || undefined,
+          contactEmail: formData.sellerContactEmail || undefined,
         },
         imageUrl: images[0].url,
         gallery: images,
         specs: filteredSpecs,
+        productLocation: formData.productLocation,
+        stockStatus: formData.stockStatus,
+        condition: formData.condition,
+        deliveryFeeEstimate: formData.deliveryFeeEstimate ? parseFloat(formData.deliveryFeeEstimate) : undefined,
+        deliveryNotes: formData.deliveryNotes || undefined,
         createdAt: new Date().toISOString(),
       });
 
@@ -125,24 +149,32 @@ export default function AddProductPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <Button variant="ghost" asChild className="mb-4">
-            <Link href="/admin" className="flex items-center gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              Back to Admin
-            </Link>
-          </Button>
-          <h1 className="text-4xl font-bold mb-2">Add New Product</h1>
-          <p className="text-muted-foreground">Fill in the product details below</p>
-        </div>
+    <div className="min-h-screen bg-gradient-mesh relative">
+      {/* Gradient overlay */}
+      <div className="fixed inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 pointer-events-none" />
+      
+      <div className="container mx-auto px-4 py-8 md:py-12 relative z-10">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-6 md:mb-8">
+            <Button variant="ghost" asChild className="mb-4 glass-effect hover:bg-white/10">
+              <Link href="/admin" className="flex items-center gap-2">
+                <ArrowLeft className="h-4 w-4" />
+                Back to Seller Portal
+              </Link>
+            </Button>
+            <h1 className="text-3xl md:text-4xl font-bold mb-2 bg-gradient-primary bg-clip-text text-transparent">
+              Add New Product
+            </h1>
+            <p className="text-muted-foreground">Fill in the product details below</p>
+          </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
+        <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8">
           {/* Basic Information */}
-          <Card>
+          <Card className="glass-effect-strong depth-layer-1 border-0">
             <CardHeader>
-              <CardTitle>Basic Information</CardTitle>
+              <CardTitle className="bg-gradient-primary bg-clip-text text-transparent">
+                Basic Information
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-2">
@@ -230,9 +262,11 @@ export default function AddProductPage() {
           </Card>
 
           {/* Seller Information */}
-          <Card>
+          <Card className="glass-effect-strong depth-layer-1 border-0">
             <CardHeader>
-              <CardTitle>Seller Information</CardTitle>
+              <CardTitle className="bg-gradient-industrial bg-clip-text text-transparent">
+                Seller Information
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-2">
@@ -244,6 +278,30 @@ export default function AddProductPage() {
                   required
                   placeholder="e.g., Ghana Heavy Equipment Ltd."
                 />
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="sellerContactPhone">Contact Phone</Label>
+                  <Input
+                    id="sellerContactPhone"
+                    type="tel"
+                    value={formData.sellerContactPhone}
+                    onChange={(e) => setFormData({ ...formData, sellerContactPhone: e.target.value })}
+                    placeholder="e.g., +233 24 123 4567"
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="sellerContactEmail">Contact Email</Label>
+                  <Input
+                    id="sellerContactEmail"
+                    type="email"
+                    value={formData.sellerContactEmail}
+                    onChange={(e) => setFormData({ ...formData, sellerContactEmail: e.target.value })}
+                    placeholder="e.g., seller@example.com"
+                  />
+                </div>
               </div>
 
               <div className="flex items-center gap-2">
@@ -263,10 +321,124 @@ export default function AddProductPage() {
             </CardContent>
           </Card>
 
-          {/* Images */}
-          <Card>
+          {/* Product Location & Delivery */}
+          <Card className="glass-effect-strong depth-layer-1 border-0">
             <CardHeader>
-              <CardTitle>Product Images *</CardTitle>
+              <CardTitle className="bg-gradient-industrial bg-clip-text text-transparent">
+                Location & Delivery
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="productLocation">Product Location *</Label>
+                  <Select
+                    value={formData.productLocation}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, productLocation: value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select region where product is located" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {GHANA_REGIONS.map((region) => (
+                        <SelectItem key={region.value} value={region.label}>
+                          {region.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Where is this product currently located? This helps buyers estimate delivery time.
+                  </p>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="deliveryFeeEstimate">Estimated Delivery Fee (GHS)</Label>
+                  <Input
+                    id="deliveryFeeEstimate"
+                    type="number"
+                    step="1"
+                    value={formData.deliveryFeeEstimate}
+                    onChange={(e) => setFormData({ ...formData, deliveryFeeEstimate: e.target.value })}
+                    placeholder="e.g., 500"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Base delivery fee within Accra. Buyers pay for delivery.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="stockStatus">Stock Status *</Label>
+                  <Select
+                    value={formData.stockStatus}
+                    onValueChange={(value: any) =>
+                      setFormData({ ...formData, stockStatus: value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {STOCK_STATUS.map((status) => (
+                        <SelectItem key={status.value} value={status.value}>
+                          {status.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="condition">Product Condition *</Label>
+                  <Select
+                    value={formData.condition}
+                    onValueChange={(value: any) =>
+                      setFormData({ ...formData, condition: value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PRODUCT_CONDITION.map((cond) => (
+                        <SelectItem key={cond.value} value={cond.value}>
+                          <div>
+                            <div>{cond.label}</div>
+                            <div className="text-xs text-muted-foreground">{cond.description}</div>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="deliveryNotes">Delivery Notes (Optional)</Label>
+                <Textarea
+                  id="deliveryNotes"
+                  value={formData.deliveryNotes}
+                  onChange={(e) => setFormData({ ...formData, deliveryNotes: e.target.value })}
+                  placeholder="e.g., Requires flatbed truck for transport, assembly available for additional fee"
+                  rows={3}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Special delivery requirements, installation services, or additional fees.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Images */}
+          <Card className="glass-effect-strong depth-layer-1 border-0">
+            <CardHeader>
+              <CardTitle className="bg-gradient-primary bg-clip-text text-transparent">
+                Product Images *
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <ImageUploader
@@ -278,11 +450,13 @@ export default function AddProductPage() {
           </Card>
 
           {/* Specifications */}
-          <Card>
+          <Card className="glass-effect-strong depth-layer-1 border-0">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle>Specifications</CardTitle>
-                <Button type="button" size="sm" onClick={handleAddSpec}>
+                <CardTitle className="bg-gradient-industrial bg-clip-text text-transparent">
+                  Specifications
+                </CardTitle>
+                <Button type="button" size="sm" onClick={handleAddSpec} className="glass-effect">
                   <Plus className="h-4 w-4 mr-2" />
                   Add Spec
                 </Button>
@@ -326,10 +500,10 @@ export default function AddProductPage() {
 
           {/* Submit Button */}
           <div className="flex gap-4">
-            <Button type="button" variant="outline" asChild className="flex-1">
+            <Button type="button" variant="outline" asChild className="flex-1 glass-effect">
               <Link href="/admin">Cancel</Link>
             </Button>
-            <Button type="submit" disabled={loading} className="flex-1">
+            <Button type="submit" disabled={loading} className="flex-1 gradient-primary text-white interactive-glow">
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
