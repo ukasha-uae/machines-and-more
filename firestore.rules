@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Public catalog can be read by buyers, but writes are server-side only.
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Buyers can submit purchase requests. Updates/deletes are blocked from clients.
+    match /purchase_requests/{requestId} {
+      allow create: if true;
+      allow read, update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

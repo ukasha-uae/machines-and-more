@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createAdminSessionToken, isWeakAdminKey } from '@/lib/security/admin-auth';
 
 const ADMIN_COOKIE_NAME = 'mm_admin_session';
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
   if (!pathname.startsWith('/admin')) {
@@ -12,7 +13,6 @@ export function middleware(request: NextRequest) {
   const isLoginRoute = pathname === '/admin/login';
   const adminKey = process.env.ADMIN_ACCESS_KEY;
   const sessionCookie = request.cookies.get(ADMIN_COOKIE_NAME)?.value;
-  const isAuthenticated = Boolean(adminKey) && sessionCookie === adminKey;
 
   if (!adminKey) {
     // Fail closed when admin key is not configured.
@@ -21,6 +21,16 @@ export function middleware(request: NextRequest) {
       headers: { 'content-type': 'text/plain' },
     });
   }
+
+  if (isWeakAdminKey(adminKey)) {
+    return new NextResponse('ADMIN_ACCESS_KEY is too weak. Set a strong key before publishing.', {
+      status: 500,
+      headers: { 'content-type': 'text/plain' },
+    });
+  }
+
+  const expectedToken = await createAdminSessionToken(adminKey);
+  const isAuthenticated = sessionCookie === expectedToken;
 
   if (!isAuthenticated && !isLoginRoute) {
     const loginUrl = request.nextUrl.clone();

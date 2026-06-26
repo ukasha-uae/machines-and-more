@@ -6,8 +6,6 @@ import {
   doc,
   query,
   where,
-  deleteDoc,
-  updateDoc,
   serverTimestamp,
   orderBy
 } from 'firebase/firestore';
@@ -43,18 +41,42 @@ export async function getPendingProducts(): Promise<Product[]> {
 }
 
 export async function approveProduct(productId: string): Promise<void> {
-  await updateDoc(doc(db, 'products', productId), { status: 'approved' });
+  const res = await fetch(`/api/admin/products/${productId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: 'approved' }),
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to approve product');
+  }
 }
 
 export async function rejectProduct(productId: string, reason?: string): Promise<void> {
-  await updateDoc(doc(db, 'products', productId), {
-    status: 'rejected',
-    ...(reason ? { rejectionReason: reason } : {}),
+  const res = await fetch(`/api/admin/products/${productId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      status: 'rejected',
+      ...(reason ? { rejectionReason: reason } : {}),
+    }),
   });
+
+  if (!res.ok) {
+    throw new Error('Failed to reject product');
+  }
 }
 
 export async function setProductFeatured(productId: string, featured: boolean): Promise<void> {
-  await updateDoc(doc(db, 'products', productId), { featured });
+  const res = await fetch(`/api/admin/products/${productId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ featured }),
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to update featured status');
+  }
 }
 
 export async function getProductById(productId: string): Promise<Product | null> {
@@ -70,7 +92,15 @@ export async function getProductById(productId: string): Promise<Product | null>
 }
 
 export async function updateProduct(productId: string, productData: Partial<Omit<Product, 'id'>>): Promise<void> {
-  await updateDoc(doc(db, 'products', productId), productData);
+  const res = await fetch(`/api/admin/products/${productId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(productData),
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to update product');
+  }
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
@@ -109,20 +139,22 @@ export async function getProductsByCategory(mainCategory?: string, subCategory?:
 
 export async function addProduct(productData: Omit<Product, 'id'>): Promise<string> {
   try {
-    console.log('� Calling addDoc to Firestore...');
-
-    const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error('Firestore write timed out after 10s — likely a security rules permission issue. Check Firebase Console → Firestore → Rules.')), 10000)
-    );
-
-    const writePromise = addDoc(productsCollection, {
-      ...productData,
-      createdAt: serverTimestamp()
+    const res = await fetch('/api/admin/products', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(productData),
     });
 
-    const docRef = await Promise.race([writePromise, timeoutPromise]);
-    console.log('✅ Product saved with ID:', docRef.id);
-    return docRef.id;
+    if (!res.ok) {
+      throw new Error('Failed to create product');
+    }
+
+    const payload = (await res.json()) as { id?: string };
+    if (!payload.id) {
+      throw new Error('Product creation response did not include id');
+    }
+
+    return payload.id;
   } catch (error) {
     console.error('❌ Error in addProduct:', error);
     throw error;
@@ -130,7 +162,13 @@ export async function addProduct(productData: Omit<Product, 'id'>): Promise<stri
 }
 
 export async function deleteProduct(productId: string): Promise<void> {
-  await deleteDoc(doc(db, 'products', productId));
+  const res = await fetch(`/api/admin/products/${productId}`, {
+    method: 'DELETE',
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to delete product');
+  }
 }
 
 // Purchase Requests Collection
