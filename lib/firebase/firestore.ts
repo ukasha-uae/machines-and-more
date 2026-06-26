@@ -7,6 +7,7 @@ import {
   query,
   where,
   deleteDoc,
+  updateDoc,
   serverTimestamp,
   orderBy
 } from 'firebase/firestore';
@@ -22,6 +23,34 @@ export async function getAllProducts(): Promise<Product[]> {
     id: doc.id,
     ...doc.data()
   } as Product));
+}
+
+// Only approved products (or old products without a status field) — shown to public
+export async function getApprovedProducts(): Promise<Product[]> {
+  const snapshot = await getDocs(query(productsCollection, orderBy('createdAt', 'desc')));
+  return snapshot.docs
+    .map(doc => ({ id: doc.id, ...doc.data() } as Product))
+    .filter(p => !p.status || p.status === 'approved');
+}
+
+// Only pending products — shown to admin for review
+export async function getPendingProducts(): Promise<Product[]> {
+  const q = query(productsCollection, where('status', '==', 'pending'));
+  const snapshot = await getDocs(q);
+  return snapshot.docs
+    .map(doc => ({ id: doc.id, ...doc.data() } as Product))
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
+export async function approveProduct(productId: string): Promise<void> {
+  await updateDoc(doc(db, 'products', productId), { status: 'approved' });
+}
+
+export async function rejectProduct(productId: string, reason?: string): Promise<void> {
+  await updateDoc(doc(db, 'products', productId), {
+    status: 'rejected',
+    ...(reason ? { rejectionReason: reason } : {}),
+  });
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
@@ -59,11 +88,25 @@ export async function getProductsByCategory(mainCategory?: string, subCategory?:
 }
 
 export async function addProduct(productData: Omit<Product, 'id'>): Promise<string> {
-  const docRef = await addDoc(productsCollection, {
-    ...productData,
-    createdAt: serverTimestamp()
-  });
-  return docRef.id;
+  try {
+    console.log('� Calling addDoc to Firestore...');
+
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('Firestore write timed out after 10s — likely a security rules permission issue. Check Firebase Console → Firestore → Rules.')), 10000)
+    );
+
+    const writePromise = addDoc(productsCollection, {
+      ...productData,
+      createdAt: serverTimestamp()
+    });
+
+    const docRef = await Promise.race([writePromise, timeoutPromise]);
+    console.log('✅ Product saved with ID:', docRef.id);
+    return docRef.id;
+  } catch (error) {
+    console.error('❌ Error in addProduct:', error);
+    throw error;
+  }
 }
 
 export async function deleteProduct(productId: string): Promise<void> {

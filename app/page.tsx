@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Product, CATEGORIES } from '@/types';
-import { getAllProducts, getProductsByCategory } from '@/lib/firebase/firestore';
+import { getApprovedProducts, getProductsByCategory } from '@/lib/firebase/firestore';
 import HeroCarousel from '@/components/home/HeroCarousel';
 import ProductFilters from '@/components/products/ProductFilters';
 import ProductCard from '@/components/products/ProductCard';
@@ -31,7 +31,7 @@ export default function HomePage() {
   const loadProducts = async () => {
     try {
       setLoading(true);
-      const allProducts = await getAllProducts();
+      const allProducts = await getApprovedProducts();
       setProducts(allProducts);
       setFilteredProducts(allProducts);
       // Select top 3 products from "Machines" category for carousel
@@ -105,7 +105,7 @@ export default function HomePage() {
     try {
       setLoading(true);
       if (!filters.mainCategory) {
-        const allProducts = await getAllProducts();
+        const allProducts = await getApprovedProducts();
         setProducts(allProducts);
       } else {
         const filtered = await getProductsByCategory(filters.mainCategory, filters.subCategory);

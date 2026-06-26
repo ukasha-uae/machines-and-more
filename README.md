@@ -14,9 +14,17 @@ A Next.js-based e-commerce application for industrial machines and vehicles in G
 
 ### Admin Dashboard
 - **Product Management**: View all products in a sortable table
-- **Add Products**: Multi-image upload with drag-and-drop reordering
+- **Add Products**: 
+  - Multi-image upload with drag-and-drop
+  - Batch upload multiple images at once
+  - Drag-to-reorder images (first = main thumbnail)
+  - Real-time upload progress with visual feedback
 - **Seed Database**: Populate with sample products for testing
 - **Delete Products**: Remove products with confirmation dialog
+- **Image Management**: 
+  - Drag images to reorder or delete
+  - Delete individual product images
+  - File type & size validation (10MB max per image)
 
 ## Tech Stack
 
@@ -142,13 +150,19 @@ Once dependencies are installed:
    rules_version = '2';
    service firebase.storage {
      match /b/{bucket}/o {
-       match /products/{allPaths=**} {
+       match /products/{productId}/{imageFile} {
+         // Allow anyone to read images
          allow read: if true;
-         allow write: if true; // In production, restrict to authenticated admins
+         
+         // Allow uploads for image files under 10MB
+         allow write: if request.resource.size < 10 * 1024 * 1024 
+                      && request.resource.contentType.matches('image/.*');
        }
      }
    }
    ```
+
+   ℹ️ **Note**: For seller authentication, see [IMAGE-UPLOAD-FIX.md](./IMAGE-UPLOAD-FIX.md)
 
 6. **Run the development server**
    ```bash

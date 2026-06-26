@@ -6,6 +6,7 @@ import {
   UploadTaskSnapshot
 } from 'firebase/storage';
 import { storage } from './firebase';
+import { firebaseConfig } from './config';
 
 export interface UploadProgress {
   progress: number;
@@ -18,6 +19,12 @@ export async function uploadProductImage(
   productId: string,
   onProgress?: (progress: number) => void
 ): Promise<{ url: string; path: string }> {
+  if (!firebaseConfig.storageBucket || firebaseConfig.storageBucket.includes('your-storage-bucket')) {
+    throw new Error(
+      'Firebase storage bucket is not configured. Set NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET in your environment variables.'
+    );
+  }
+
   try {
     console.log('🔄 Starting upload:', { fileName: file.name, size: file.size, productId });
     
@@ -27,23 +34,28 @@ export async function uploadProductImage(
     
     console.log('📦 Storage ref created:', storageRef.fullPath);
     
-    const uploadTask = uploadBytesResumable(storageRef, file);
+    const uploadTask = uploadBytesResumable(storageRef, file, { contentType: file.type });
     
     return new Promise((resolve, reject) => {
-      uploadTask.on(
+      const unsubscribe = uploadTask.on(
         'state_changed',
         (snapshot: UploadTaskSnapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          if (progress === 0 && snapshot.bytesTransferred > 0) {
+            progress = 1;
+          }
           console.log('📊 Upload progress:', Math.round(progress) + '%');
           if (onProgress) onProgress(progress);
         },
         (error) => {
+          unsubscribe();
           console.error('❌ Upload error:', error);
           console.error('Error code:', error.code);
           console.error('Error message:', error.message);
           reject(error);
         },
         async () => {
+          unsubscribe();
           try {
             console.log('✅ Upload completed, getting download URL...');
             const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);

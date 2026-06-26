@@ -100,11 +100,21 @@ export default function AddProductPage() {
 
     try {
       setLoading(true);
+      console.log('📝 Starting product submission...');
 
       const slug = createSlug(formData.name);
       const filteredSpecs = specs.filter(spec => spec.key && spec.value);
 
-      await addProduct({
+      // Build seller object, only including optional fields if they have values
+      const seller: any = {
+        name: formData.sellerName,
+        verified: formData.sellerVerified,
+      };
+      if (formData.sellerContactPhone) seller.contactPhone = formData.sellerContactPhone;
+      if (formData.sellerContactEmail) seller.contactEmail = formData.sellerContactEmail;
+
+      // Build product object, only including optional fields if they have values
+      const productData: any = {
         slug,
         name: formData.name,
         price: parseFloat(formData.price),
@@ -113,37 +123,63 @@ export default function AddProductPage() {
           sub: formData.subCategory,
         },
         description: formData.description,
-        seller: {
-          name: formData.sellerName,
-          verified: formData.sellerVerified,
-          contactPhone: formData.sellerContactPhone || undefined,
-          contactEmail: formData.sellerContactEmail || undefined,
-        },
+        seller,
         imageUrl: images[0].url,
         gallery: images,
         specs: filteredSpecs,
         productLocation: formData.productLocation,
         stockStatus: formData.stockStatus,
         condition: formData.condition,
-        deliveryFeeEstimate: formData.deliveryFeeEstimate ? parseFloat(formData.deliveryFeeEstimate) : undefined,
-        deliveryNotes: formData.deliveryNotes || undefined,
+        status: 'pending', // Requires team approval before going live
         createdAt: new Date().toISOString(),
-      });
+      };
+
+      // Add optional fields only if they have values
+      if (formData.deliveryFeeEstimate) {
+        productData.deliveryFeeEstimate = parseFloat(formData.deliveryFeeEstimate);
+      }
+      if (formData.deliveryNotes) {
+        productData.deliveryNotes = formData.deliveryNotes;
+      }
+
+      console.log('💾 Saving product to Firestore...');
+      const productId = await addProduct(productData);
+      console.log('✅ Product saved successfully with ID:', productId);
+
+      // Send WhatsApp notification to the team
+      const condition = formData.condition.replace(/-/g, ' ');
+      const message = encodeURIComponent(
+        `🆕 *New Product Pending Approval*\n\n` +
+        `📦 *Product:* ${formData.name}\n` +
+        `💰 *Price:* GHS ${parseFloat(formData.price).toLocaleString()}\n` +
+        `📍 *Location:* ${formData.productLocation}\n` +
+        `🏷️ *Category:* ${selectedCategory?.label} › ${formData.subCategory}\n` +
+        `⚙️ *Condition:* ${condition}\n` +
+        `👤 *Seller:* ${formData.sellerName}\n` +
+        `${formData.sellerContactPhone ? `📞 *Seller Phone:* ${formData.sellerContactPhone}\n` : ''}` +
+        `\n✅ Review and approve at:\n${window.location.origin}/admin`
+      );
+      window.open(`https://wa.me/233598178955?text=${message}`, '_blank');
 
       toast({
-        title: 'Success',
-        description: 'Product added successfully!',
+        title: '✅ Product Submitted!',
+        description: 'Your product is pending team review. We\'ll approve it shortly.',
       });
 
-      router.push('/admin');
+      console.log('🔄 Redirecting to admin page...');
+      setLoading(false); // Set to false before redirect to unblock UI
+      
+      // Use window.location for more reliable redirect
+      setTimeout(() => {
+        window.location.href = '/admin';
+      }, 300);
     } catch (error) {
-      console.error('Error adding product:', error);
+      console.error('❌ Error adding product:', error);
       toast({
         title: 'Error',
-        description: 'Failed to add product. Please try again.',
+        description: `Failed to add product: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: 'destructive',
       });
-    } finally {
       setLoading(false);
     }
   };

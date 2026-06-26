@@ -38,6 +38,69 @@ The Seller Portal is now a fully-featured marketplace platform that supports you
 
 1. **Navigate to Seller Portal** (`/admin`)
 2. **Click "Add New Product"**
+3. **Fill in Product Details**:
+   - Product Name, Price, Category
+   - Description, Seller Information
+   - Location, Stock Status, Condition
+
+4. **Upload Product Images** (Important!)
+   - **Drag multiple images** into the upload area, or click "Select Images"
+   - Upload up to 10MB per image
+   - **Organize images**: Drag to reorder. First image = Main product image
+   - ✅ Green checkmark = Successfully uploaded
+   - You can delete images by clicking the red X button
+
+5. **Add Specifications** (Optional)
+   - Click "+ Add Spec" to add features like "Engine", "Horsepower", etc.
+
+6. **Review & Submit**
+   - All required fields must be filled
+   - At least one image is required
+   - Click "Save Product" to publish
+
+## 🖼️ Image Upload Features
+
+### Multiple Images
+- **Upload batch**: Select multiple images at once
+- **Upload sequentially**: Add images one at a time
+- **Drag & drop**: Drag image files directly into the upload area
+
+### Image Organization
+- **Reorder images**: Drag thumbnails to change order
+- **Main image badge**: First image shown on product listing
+- **Visual feedback**: 
+  - Progress % while uploading
+  - Green checkmark when complete
+  - Red error message if upload fails
+
+### Image Requirements
+- **Format**: PNG, JPG, or other standard image formats
+- **Size**: Maximum 10MB per image
+- **Quantity**: At least 1 image required, recommend 3+ for better sales
+- **Aspect ratio**: Any ratio (thumbnails show as squares)
+
+## 📋 Tips for Better Sales
+
+1. **Use Multiple Images**:
+   - Different angles of the product
+   - Close-up of key features
+   - Overall product view
+   - This helps buyers understand what they're buying
+
+2. **Image Order Matters**:
+   - First image = Main product thumbnail
+   - Put best/clearest photo first
+   - Arrange logically (overview → details → close-ups)
+
+3. **Accurate Information**:
+   - Be honest about condition (New/Used)
+   - Set realistic delivery fees
+   - Add special notes (e.g., "Requires pickup", "Delivery available")
+
+4. **Respond Quickly**:
+   - Check "Request to Buy" messages often
+   - Reply with AI suggestions or customize responses
+   - Fast responses increase sales chance
 3. **Fill in the form**:
    
    **Basic Information:**

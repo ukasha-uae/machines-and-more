@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { notFound } from 'next/navigation';
 import { Product } from '@/types';
 import { getProductBySlug } from '@/lib/firebase/firestore';
@@ -13,7 +13,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BadgeCheck, Phone, MessageCircle, Loader2 } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 
-export default function ProductPage({ params }: { params: { slug: string } }) {
+export default function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = use(params);
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [requestDialogOpen, setRequestDialogOpen] = useState(false);
@@ -22,12 +23,12 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
 
   useEffect(() => {
     loadProduct();
-  }, [params.slug]);
+  }, [slug]);
 
   const loadProduct = async () => {
     try {
       setLoading(true);
-      const data = await getProductBySlug(params.slug);
+      const data = await getProductBySlug(slug);
       setProduct(data);
     } catch (error) {
       console.error('Error loading product:', error);

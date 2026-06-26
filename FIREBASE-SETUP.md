@@ -103,13 +103,41 @@ service cloud.firestore {
 
 ## 9. Update Storage Security Rules (Production)
 
+⚠️ **IMPORTANT**: Use these rules to allow sellers to upload images:
+
 ```javascript
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    match /products/{allPaths=**} {
+    match /products/{productId}/{imageFile} {
+      // Allow read by anyone
       allow read: if true;
-      allow write: if request.auth != null && request.auth.token.admin == true;
+      // Allow write if file is an image and under 10MB
+      allow write: if request.resource.size < 10 * 1024 * 1024 
+                   && request.resource.contentType.matches('image/.*');
+    }
+  }
+}
+```
+
+### Important Notes:
+- These rules allow **public uploads** - use this for development/MVP
+- For production with authentication, use custom claims (see Alternative Rules below)
+- File uploads are limited to 10MB and image types only
+
+### Alternative Rules (Authenticated Only)
+
+If you implement seller authentication, use these rules instead:
+
+```javascript
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /products/{productId}/{imageFile} {
+      allow read: if true;
+      allow write: if request.auth != null 
+                   && request.resource.size < 10 * 1024 * 1024 
+                   && request.resource.contentType.matches('image/.*');
     }
   }
 }

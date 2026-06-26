@@ -21,6 +21,8 @@ export interface Specification {
   value: string;
 }
 
+export type ProductStatus = 'pending' | 'approved' | 'rejected';
+
 export interface Product {
   id: string;
   slug: string;
@@ -33,6 +35,9 @@ export interface Product {
   gallery: ImageGallery[];
   specs: Specification[];
   createdAt: string;
+  // Approval workflow
+  status?: ProductStatus; // undefined or 'approved' = live (backward compat)
+  rejectionReason?: string;
   // Marketplace & Delivery Info
   productLocation: string; // Where the product is currently located
   stockStatus: 'in-stock' | 'limited' | 'on-order' | 'out-of-stock';

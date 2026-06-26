@@ -75,7 +75,6 @@ export default function Header() {
                       size="sm"
                       className="absolute right-1 top-1 h-8 px-3 bg-gradient-primary hover:shadow-lg hover:shadow-primary/50 text-white rounded-lg transition-all duration-300 interactive-scale">
                       <Search className="h-4 w-4" />
-                      <Search className="h-5 w-5" />
                     </Button>
                   </div>
                 </form>
@@ -130,7 +129,6 @@ export default function Header() {
                     type="submit"
                     size="sm"
                     className="absolute right-1 top-1 h-7 px-2.5 bg-gradient-primary text-white rounded-md interactive-scale">
-                    <Search className="h-3.5 w-3.5" />
                     <Search className="h-4 w-4" />
                   </Button>
                 </div>
