@@ -27,6 +27,7 @@ export interface Product {
   id: string;
   slug: string;
   name: string;
+  featured?: boolean;
   category: Category;
   price: number;
   description: string;

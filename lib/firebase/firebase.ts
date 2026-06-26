@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import { initializeFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getAuth } from 'firebase/auth';
 import { firebaseConfig } from './config';
@@ -8,7 +8,10 @@ import { firebaseConfig } from './config';
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
 // Initialize services
-export const db = getFirestore(app);
+export const db = initializeFirestore(app, {
+  // Helps when WebChannel is blocked/unstable on some networks and browsers.
+  experimentalAutoDetectLongPolling: true,
+});
 export const storage = getStorage(app);
 export const auth = getAuth(app);
 

@@ -151,16 +151,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                   <p className="text-xs text-muted-foreground">
                     📍 Product located in {product.productLocation}
                   </p>
-                  {(product.seller.contactPhone || product.seller.contactEmail) && (
-                    <div className="mt-3 pt-3 border-t border-white/10 space-y-1">
-                      {product.seller.contactPhone && (
-                        <p className="text-xs text-muted-foreground">📞 {product.seller.contactPhone}</p>
-                      )}
-                      {product.seller.contactEmail && (
-                        <p className="text-xs text-muted-foreground">✉️ {product.seller.contactEmail}</p>
-                      )}
-                    </div>
-                  )}
                 </div>
 
                 {/* Action Buttons */}
@@ -177,14 +167,14 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                   
                   <div className="grid grid-cols-2 gap-3">
                     <Button size="lg" variant="outline" className="glass-effect border-white/20 hover:bg-primary/10 h-12" asChild>
-                      <a href="tel:+233XXXXXXXXX" className="flex items-center gap-2">
+                      <a href="tel:+233598178955" className="flex items-center gap-2">
                         <Phone className="h-5 w-5" />
                         <span className="font-semibold">Call Us</span>
                       </a>
                     </Button>
                     <Button size="lg" className="bg-gradient-to-r from-green-600 to-emerald-600 hover:shadow-lg hover:shadow-green-600/50 text-white h-12" asChild>
                       <a 
-                        href="https://wa.me/233XXXXXXXXX" 
+                        href="https://wa.me/233598178955" 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="flex items-center gap-2"
@@ -265,7 +255,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                     <span className="text-machine text-xl">✓</span>
                     <div>
                       <span className="font-medium block">Pickup Available</span>
-                      <span className="text-xs text-muted-foreground">Product located in {product.productLocation}. Contact seller for pickup arrangements.</span>
+                      <span className="text-xs text-muted-foreground">Product located in {product.productLocation}. Contact our team for pickup arrangements.</span>
                     </div>
                   </li>
                   <li className="flex items-start gap-3 glass-effect p-3 rounded-lg border border-white/10">

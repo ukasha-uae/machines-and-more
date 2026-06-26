@@ -182,7 +182,12 @@ export const seedProducts: Omit<Product, 'id'>[] = [
     ],
     createdAt: new Date().toISOString()
   }
-];
+].map((product) => ({
+  ...product,
+  productLocation: 'Greater Accra',
+  stockStatus: 'in-stock' as const,
+  condition: 'used-good' as const,
+}));
 
 export async function seedDatabase(): Promise<void> {
   const productsCollection = collection(db, 'products');

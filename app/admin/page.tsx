@@ -9,6 +9,7 @@ import {
   approveProduct,
   rejectProduct,
   deleteProduct,
+  setProductFeatured,
 } from '@/lib/firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,7 +29,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Plus, Loader2, Trash2, Database, CheckCircle2, XCircle, Clock, Eye } from 'lucide-react';
+import { Plus, Loader2, Trash2, Database, CheckCircle2, XCircle, Clock, Eye, Star, Pencil } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
@@ -115,6 +116,22 @@ export default function AdminPage() {
     }
   };
 
+  const handleToggleFeatured = async (product: Product) => {
+    setActionLoading(product.id);
+    try {
+      await setProductFeatured(product.id, !product.featured);
+      toast({
+        title: product.featured ? 'Removed from Featured' : 'Marked as Featured',
+        description: `"${product.name}" has been updated.`,
+      });
+      await loadAll();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to update featured status', variant: 'destructive' });
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-mesh relative">
       <div className="fixed inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 pointer-events-none" />
@@ -175,6 +192,12 @@ export default function AdminPage() {
             <Link href="/admin/add-product" className="flex items-center gap-2">
               <Plus className="h-5 w-5" />
               Add New Product
+            </Link>
+          </Button>
+          <Button size="lg" variant="outline" className="glass-effect interactive-scale border-amber-300/40" asChild>
+            <Link href="/admin/approvals" className="flex items-center gap-2">
+              <Clock className="h-5 w-5 text-amber-500" />
+              Review Approvals
             </Link>
           </Button>
           <Button size="lg" variant="outline" className="glass-effect interactive-scale" asChild>
@@ -300,6 +323,7 @@ export default function AdminPage() {
                       <TableHead>Category</TableHead>
                       <TableHead>Price</TableHead>
                       <TableHead>Seller</TableHead>
+                      <TableHead>Featured</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -324,14 +348,33 @@ export default function AdminPage() {
                             <span className="ml-1 text-green-600 text-xs">✓</span>
                           )}
                         </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell>
                           <Button
                             size="sm"
-                            variant="destructive"
-                            onClick={() => handleDeleteClick(product)}
+                            variant={product.featured ? 'default' : 'outline'}
+                            className={product.featured ? 'bg-amber-500 hover:bg-amber-600 text-white' : ''}
+                            disabled={actionLoading === product.id}
+                            onClick={() => handleToggleFeatured(product)}
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Star className={`h-4 w-4 mr-1 ${product.featured ? 'fill-current' : ''}`} />
+                            {product.featured ? 'Featured' : 'Set Featured'}
                           </Button>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button size="sm" variant="outline" asChild>
+                              <Link href={`/admin/edit/${product.id}`}>
+                                <Pencil className="h-4 w-4" />
+                              </Link>
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => handleDeleteClick(product)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}

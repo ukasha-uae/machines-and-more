@@ -18,7 +18,7 @@ We've received your request to buy and our sales team will contact you shortly a
 
 Our verified sellers ensure quality and reliability. We offer Cash on Delivery within our service regions.
 
-For immediate assistance, please call us at +233 XX XXX XXXX or WhatsApp +233 XX XXX XXXX.
+For immediate assistance, please call us at 0598178955 or WhatsApp 0598178955.
 
 Best regards,
 Machines & More Sales Team`;

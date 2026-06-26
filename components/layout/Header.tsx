@@ -88,7 +88,7 @@ export default function Header() {
                   className="glass-effect border-white/20 text-foreground hover:bg-primary/10 hover:border-primary/30 interactive-scale depth-layer-1" 
                   asChild
                 >
-                  <a href="tel:+233XXXXXXXXX" className="flex items-center gap-2">
+                  <a href="tel:+233598178955" className="flex items-center gap-2">
                     <Phone className="h-4 w-4" />
                     <span className="hidden xl:inline font-medium">Call</span>
                   </a>
@@ -98,7 +98,7 @@ export default function Header() {
                   className="bg-gradient-industrial hover:shadow-lg hover:shadow-industrial/50 text-white interactive-scale depth-layer-2" 
                   asChild
                 >
-                  <a href="https://wa.me/233XXXXXXXXX" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                  <a href="https://wa.me/233598178955" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
                     <MessageCircle className="h-4 w-4" />
                     <span className="hidden xl:inline font-medium">WhatsApp</span>
                   </a>
@@ -217,7 +217,7 @@ export default function Header() {
                 className="glass-effect border-primary/20 hover:bg-primary/10 interactive-scale depth-layer-1" 
                 asChild
               >
-                <a href="tel:+233XXXXXXXXX" className="flex items-center justify-center gap-2">
+                <a href="tel:+233598178955" className="flex items-center justify-center gap-2">
                   <Phone className="h-4 w-4" />
                   <span className="font-medium">Call Us</span>
                 </a>
@@ -227,7 +227,7 @@ export default function Header() {
                 className="bg-gradient-industrial hover:shadow-lg hover:shadow-industrial/50 text-white interactive-scale depth-layer-2" 
                 asChild
               >
-                <a href="https://wa.me/233XXXXXXXXX" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
+                <a href="https://wa.me/233598178955" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
                   <MessageCircle className="h-4 w-4" />
                   <span className="font-medium">WhatsApp</span>
                 </a>

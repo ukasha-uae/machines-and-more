@@ -123,7 +123,7 @@ export default function RequestBuyDialog({
                 value={formData.phoneNumber}
                 onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
                 required
-                placeholder="+233 XX XXX XXXX"
+                placeholder="0598178955"
               />
             </div>
 

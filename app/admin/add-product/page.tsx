@@ -24,6 +24,7 @@ import { ArrowLeft, Plus, X, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 interface UploadedImage {
+  id: string;
   url: string;
   path: string;
   order: number;
@@ -40,6 +41,7 @@ export default function AddProductPage() {
     mainCategory: '',
     subCategory: '',
     description: '',
+    featured: false,
     sellerName: '',
     sellerVerified: true,
     sellerContactPhone: '',
@@ -104,6 +106,7 @@ export default function AddProductPage() {
 
       const slug = createSlug(formData.name);
       const filteredSpecs = specs.filter(spec => spec.key && spec.value);
+      const galleryImages = images.map(({ url, path, order }) => ({ url, path, order }));
 
       // Build seller object, only including optional fields if they have values
       const seller: any = {
@@ -117,6 +120,7 @@ export default function AddProductPage() {
       const productData: any = {
         slug,
         name: formData.name,
+        featured: formData.featured,
         price: parseFloat(formData.price),
         category: {
           main: selectedCategory?.label || '',
@@ -124,8 +128,8 @@ export default function AddProductPage() {
         },
         description: formData.description,
         seller,
-        imageUrl: images[0].url,
-        gallery: images,
+        imageUrl: galleryImages[0].url,
+        gallery: galleryImages,
         specs: filteredSpecs,
         productLocation: formData.productLocation,
         stockStatus: formData.stockStatus,
@@ -157,7 +161,7 @@ export default function AddProductPage() {
         `⚙️ *Condition:* ${condition}\n` +
         `👤 *Seller:* ${formData.sellerName}\n` +
         `${formData.sellerContactPhone ? `📞 *Seller Phone:* ${formData.sellerContactPhone}\n` : ''}` +
-        `\n✅ Review and approve at:\n${window.location.origin}/admin`
+        `\n✅ Review and approve at:\n${window.location.origin}/admin/approvals`
       );
       window.open(`https://wa.me/233598178955?text=${message}`, '_blank');
 
@@ -293,6 +297,19 @@ export default function AddProductPage() {
                   placeholder="Detailed product description..."
                   rows={5}
                 />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="featured"
+                  checked={formData.featured}
+                  onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
+                  className="rounded"
+                />
+                <Label htmlFor="featured" className="cursor-pointer">
+                  Mark as Featured (show in homepage hero)
+                </Label>
               </div>
             </CardContent>
           </Card>

@@ -29,10 +29,10 @@ export default function ContactPage() {
                   <div className="flex-1">
                     <h3 className="font-semibold mb-1">Phone</h3>
                     <a 
-                      href="tel:+233XXXXXXXXX" 
+                      href="tel:+233598178955" 
                       className="text-muted-foreground hover:text-primary transition-colors"
                     >
-                      +233 XX XXX XXXX
+                      0598178955
                     </a>
                     <p className="text-sm text-muted-foreground mt-1">
                       Mon-Fri: 8:00 AM - 6:00 PM
@@ -101,7 +101,7 @@ export default function ContactPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <Button size="lg" className="w-full" asChild>
-                  <a href="tel:+233XXXXXXXXX" className="flex items-center gap-3">
+                  <a href="tel:+233598178955" className="flex items-center gap-3">
                     <Phone className="h-5 w-5" />
                     Call Us Now
                   </a>
@@ -109,7 +109,7 @@ export default function ContactPage() {
 
                 <Button size="lg" className="w-full" variant="outline" asChild>
                   <a 
-                    href="https://wa.me/233XXXXXXXXX" 
+                    href="https://wa.me/233598178955" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="flex items-center gap-3"

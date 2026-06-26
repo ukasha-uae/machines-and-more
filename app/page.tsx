@@ -34,11 +34,17 @@ export default function HomePage() {
       const allProducts = await getApprovedProducts();
       setProducts(allProducts);
       setFilteredProducts(allProducts);
-      // Select top 3 products from "Machines" category for carousel
-      const machineProducts = allProducts
-        .filter(p => p.category.main === 'Machines')
-        .slice(0, 3);
-      setFeaturedProducts(machineProducts.length > 0 ? machineProducts : allProducts.slice(0, 3));
+      const explicitlyFeatured = allProducts.filter(p => p.featured).slice(0, 5);
+      // Prefer explicit featured picks, then Machines, then latest approved products.
+      const machineProducts = allProducts.filter(p => p.category.main === 'Machines').slice(0, 5);
+      const fallbackProducts = allProducts.slice(0, 5);
+      if (explicitlyFeatured.length > 0) {
+        setFeaturedProducts(explicitlyFeatured);
+      } else if (machineProducts.length >= 2) {
+        setFeaturedProducts(machineProducts);
+      } else {
+        setFeaturedProducts(fallbackProducts);
+      }
     } catch (error) {
       console.error('Error loading products:', error);
     } finally {

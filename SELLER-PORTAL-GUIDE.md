@@ -8,7 +8,7 @@ The Seller Portal is now a fully-featured marketplace platform that supports you
 ### 1. **Product Information**
 - **Product Location**: Select from 17 Ghana regions where the product is located
 - **Stock Status**: 
-  - ✅ In Stock - Ready to Ship
+   - ✅ In Stock - Ready to Deliver
   - ⚠️ Limited Stock
   - 📦 Available on Order
   - ❌ Out of Stock

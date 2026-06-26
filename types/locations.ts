@@ -20,7 +20,7 @@ export const GHANA_REGIONS = [
 ] as const;
 
 export const STOCK_STATUS = [
-  { value: 'in-stock', label: '✅ In Stock - Ready to Ship', color: 'text-green-600' },
+  { value: 'in-stock', label: '✅ In Stock - Ready to Deliver', color: 'text-green-600' },
   { value: 'limited', label: '⚠️ Limited Stock', color: 'text-amber-600' },
   { value: 'on-order', label: '📦 Available on Order', color: 'text-blue-600' },
   { value: 'out-of-stock', label: '❌ Out of Stock', color: 'text-red-600' },

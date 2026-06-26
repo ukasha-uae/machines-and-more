@@ -53,6 +53,26 @@ export async function rejectProduct(productId: string, reason?: string): Promise
   });
 }
 
+export async function setProductFeatured(productId: string, featured: boolean): Promise<void> {
+  await updateDoc(doc(db, 'products', productId), { featured });
+}
+
+export async function getProductById(productId: string): Promise<Product | null> {
+  const ref = doc(db, 'products', productId);
+  const snapshot = await getDoc(ref);
+
+  if (!snapshot.exists()) return null;
+
+  return {
+    id: snapshot.id,
+    ...snapshot.data(),
+  } as Product;
+}
+
+export async function updateProduct(productId: string, productData: Partial<Omit<Product, 'id'>>): Promise<void> {
+  await updateDoc(doc(db, 'products', productId), productData);
+}
+
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   const q = query(productsCollection, where('slug', '==', slug));
   const snapshot = await getDocs(q);
