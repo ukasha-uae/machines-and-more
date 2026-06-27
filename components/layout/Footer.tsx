@@ -59,7 +59,7 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/admin" className="text-sm hover:text-industrial transition-all interactive-scale inline-block">
+                  <Link href="/contact" className="text-sm hover:text-industrial transition-all interactive-scale inline-block">
                     Become a Seller
                   </Link>
                 </li>

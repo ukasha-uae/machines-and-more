@@ -40,8 +40,8 @@ export default function Header() {
                 <Link href="/contact" className="hover:text-machine transition-all duration-300 interactive-scale">
                   Customer Service
                 </Link>
-                <Link href="/admin" className="hover:text-machine transition-all duration-300 interactive-scale">
-                  Seller Portal
+                <Link href="/contact" className="hover:text-machine transition-all duration-300 interactive-scale">
+                  Become a Seller
                 </Link>
               </div>
             </div>
@@ -203,11 +203,11 @@ export default function Header() {
               Contact Us
             </Link>
             <Link 
-              href="/admin" 
+              href="/contact" 
               className="text-sm font-medium py-3 px-4 rounded-lg hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10 transition-all duration-300 interactive-scale"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Seller Portal
+              Become a Seller
             </Link>
             
             <div className="flex flex-col space-y-3 pt-4 mt-4 border-t border-white/10">

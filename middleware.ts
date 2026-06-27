@@ -11,6 +11,7 @@ export async function middleware(request: NextRequest) {
   }
 
   const isLoginRoute = pathname === '/admin/login';
+  const isTeamListingRoute = pathname === '/admin/add-product';
   const adminKey = process.env.ADMIN_ACCESS_KEY;
   const sessionCookie = request.cookies.get(ADMIN_COOKIE_NAME)?.value;
 
@@ -32,7 +33,7 @@ export async function middleware(request: NextRequest) {
   const expectedToken = await createAdminSessionToken(adminKey);
   const isAuthenticated = sessionCookie === expectedToken;
 
-  if (!isAuthenticated && !isLoginRoute) {
+  if (!isAuthenticated && !isLoginRoute && !isTeamListingRoute) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = '/admin/login';
     loginUrl.search = `?next=${encodeURIComponent(pathname + search)}`;
