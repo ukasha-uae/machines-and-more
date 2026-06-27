@@ -281,6 +281,7 @@ export default function ImageUploader({ productId, images, onChange }: ImageUplo
                         src={image.url}
                         alt={`Product image ${index + 1}`}
                         fill
+                        unoptimized
                         className="object-cover rounded"
                         sizes="(max-width: 768px) 50vw, 25vw"
                       />

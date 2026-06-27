@@ -42,6 +42,23 @@ A Next.js-based e-commerce application for industrial machines and vehicles in G
 
 ## Getting Started
 
+## Automatic Deployments
+
+Pushes to `main` can deploy the app automatically through GitHub Actions.
+
+Required GitHub repository secrets:
+- `NEXT_PUBLIC_FIREBASE_API_KEY`
+- `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
+- `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
+- `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`
+- `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
+- `NEXT_PUBLIC_FIREBASE_APP_ID`
+- `ADMIN_ACCESS_KEY`
+- `FIREBASE_SERVICE_ACCOUNT_KEY`
+- `FIREBASE_PROJECT_ID`
+
+The workflow lives in [.github/workflows/deploy.yml](.github/workflows/deploy.yml) and deploys `hosting`, `firestore`, and `storage` on every push to `main`.
+
 ### Prerequisites
 
 - Node.js 18+ installed

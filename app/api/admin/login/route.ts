@@ -6,6 +6,17 @@ const MAX_ATTEMPTS = 5;
 const WINDOW_MS = 10 * 60 * 1000;
 const LOCKOUT_MS = 15 * 60 * 1000;
 
+function normalizeAdminKeyInput(value: string): string {
+  const trimmed = value.trim();
+  const prefix = 'ADMIN_ACCESS_KEY=';
+
+  if (trimmed.startsWith(prefix)) {
+    return trimmed.slice(prefix.length).trim();
+  }
+
+  return trimmed;
+}
+
 type AttemptRecord = {
   count: number;
   windowStart: number;
@@ -70,7 +81,7 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json().catch(() => ({}));
-  const key = typeof body?.key === 'string' ? body.key : '';
+  const key = typeof body?.key === 'string' ? normalizeAdminKeyInput(body.key) : '';
 
   if (key !== adminKey) {
     const updatedState = registerFailedAttempt(clientId, now);
