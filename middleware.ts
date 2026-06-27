@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminSessionToken, isWeakAdminKey } from '@/lib/security/admin-auth';
 
-const ADMIN_COOKIE_NAME = 'mm_admin_session';
+const ADMIN_COOKIE_NAME = '__session';
 
 export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
