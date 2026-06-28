@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createAdminSessionToken, isWeakAdminKey } from './admin-auth';
+import {
+  ADMIN_SESSION_COOKIE_NAME,
+  isWeakAdminKey,
+  verifyAdminSessionToken,
+} from './admin-auth';
 
 export async function requireAdmin(request: NextRequest): Promise<NextResponse | null> {
   const adminKey = process.env.ADMIN_ACCESS_KEY;
@@ -15,10 +19,10 @@ export async function requireAdmin(request: NextRequest): Promise<NextResponse |
     );
   }
 
-  const expectedToken = await createAdminSessionToken(adminKey);
-  const sessionToken = request.cookies.get('__session')?.value;
+  const sessionToken = request.cookies.get(ADMIN_SESSION_COOKIE_NAME)?.value;
+  const session = await verifyAdminSessionToken(sessionToken);
 
-  if (sessionToken !== expectedToken) {
+  if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

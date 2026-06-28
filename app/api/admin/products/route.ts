@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
 
   const productData = {
     ...payload,
-    status: 'pending',
+    status: 'approved',
     featured: false,
     createdAt: new Date().toISOString(),
   };

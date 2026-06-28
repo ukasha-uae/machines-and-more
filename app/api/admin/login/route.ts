@@ -1,7 +1,14 @@
 import { NextResponse } from 'next/server';
-import { createAdminSessionToken, isWeakAdminKey } from '@/lib/security/admin-auth';
+import { adminAuth } from '@/lib/firebase/admin';
+import {
+  ADMIN_SESSION_COOKIE_NAME,
+  ADMIN_SESSION_DURATION_SECONDS,
+  createGoogleAdminSession,
+  createLegacyAdminSession,
+  getAuthorizedAdminEmails,
+  isWeakAdminKey,
+} from '@/lib/security/admin-auth';
 
-const ADMIN_COOKIE_NAME = '__session';
 const MAX_ATTEMPTS = 5;
 const WINDOW_MS = 10 * 60 * 1000;
 const LOCKOUT_MS = 15 * 60 * 1000;
@@ -82,30 +89,55 @@ export async function POST(request: Request) {
 
   const body = await request.json().catch(() => ({}));
   const key = typeof body?.key === 'string' ? normalizeAdminKeyInput(body.key) : '';
+  const idToken = typeof body?.idToken === 'string' ? body.idToken : '';
 
-  if (key !== adminKey) {
-    const updatedState = registerFailedAttempt(clientId, now);
-    if (updatedState.lockedUntil > now) {
-      const retryAfter = Math.ceil((updatedState.lockedUntil - now) / 1000);
+  let sessionToken: string;
+
+  if (idToken) {
+    const allowedEmails = getAuthorizedAdminEmails();
+    if (allowedEmails.length === 0) {
       return NextResponse.json(
-        { error: `Too many login attempts. Try again in ${retryAfter} seconds.` },
-        { status: 429 }
+        { error: 'ADMIN_EMAILS is not configured. Add authorized admin email addresses on the server.' },
+        { status: 500 }
       );
     }
 
-    return NextResponse.json({ error: 'Invalid admin key.' }, { status: 401 });
+    try {
+      const decodedToken = await adminAuth.verifyIdToken(idToken);
+      if (!decodedToken.email) {
+        return NextResponse.json({ error: 'Your Google account did not provide an email address.' }, { status: 403 });
+      }
+
+      sessionToken = await createGoogleAdminSession(decodedToken.uid, decodedToken.email);
+    } catch {
+      return NextResponse.json({ error: 'Unable to verify Google sign-in. Please try again.' }, { status: 401 });
+    }
+  } else {
+    if (key !== adminKey) {
+      const updatedState = registerFailedAttempt(clientId, now);
+      if (updatedState.lockedUntil > now) {
+        const retryAfter = Math.ceil((updatedState.lockedUntil - now) / 1000);
+        return NextResponse.json(
+          { error: `Too many login attempts. Try again in ${retryAfter} seconds.` },
+          { status: 429 }
+        );
+      }
+
+      return NextResponse.json({ error: 'Invalid admin key.' }, { status: 401 });
+    }
+
+    sessionToken = await createLegacyAdminSession();
   }
 
   attempts.delete(clientId);
 
-  const sessionToken = await createAdminSessionToken(adminKey);
   const response = NextResponse.json({ ok: true });
-  response.cookies.set(ADMIN_COOKIE_NAME, sessionToken, {
+  response.cookies.set(ADMIN_SESSION_COOKIE_NAME, sessionToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
     path: '/',
-    maxAge: 60 * 60 * 8,
+    maxAge: ADMIN_SESSION_DURATION_SECONDS,
   });
 
   return response;

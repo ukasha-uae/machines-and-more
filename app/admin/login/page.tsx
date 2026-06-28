@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { auth } from '@/lib/firebase/firebase';
 import { Lock, Loader2 } from 'lucide-react';
 
 export default function AdminLoginPage() {
@@ -13,6 +15,7 @@ export default function AdminLoginPage() {
   const [nextPath, setNextPath] = useState('/admin');
   const [key, setKey] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -23,25 +26,49 @@ export default function AdminLoginPage() {
     }
   }, []);
 
+  const completeLogin = async (payload: Record<string, string>) => {
+    const res = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data?.error || 'Login failed');
+    }
+
+    router.push(nextPath);
+    router.refresh();
+  };
+
+  const handleGoogleSignIn = async () => {
+    setError('');
+    setGoogleLoading(true);
+
+    try {
+      const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: 'select_account' });
+
+      const result = await signInWithPopup(auth, provider);
+      const idToken = await result.user.getIdToken();
+
+      await completeLogin({ idToken });
+      await signOut(auth);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to sign in with Google');
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      const res = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data?.error || 'Login failed');
-      }
-
-      router.push(nextPath);
-      router.refresh();
+      await completeLogin({ key });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to log in');
     } finally {
@@ -58,7 +85,26 @@ export default function AdminLoginPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-6">
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Sign in with an approved Google account for admin access.
+              </p>
+              <Button type="button" className="w-full" onClick={handleGoogleSignIn} disabled={googleLoading || loading}>
+                {googleLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Continue with Google'}
+              </Button>
+            </div>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-border" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">Fallback</span>
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid gap-2">
               <Label htmlFor="key">Admin Key</Label>
               <Input
@@ -71,12 +117,17 @@ export default function AdminLoginPage() {
               />
             </div>
 
-            {error && <p className="text-sm text-red-600">{error}</p>}
+              <p className="text-xs text-muted-foreground">
+                The admin key remains available during migration, but Google sign-in is the preferred path.
+              </p>
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Sign In'}
-            </Button>
-          </form>
+              <Button type="submit" className="w-full" disabled={loading || googleLoading}>
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Sign In with Admin Key'}
+              </Button>
+            </form>
+
+            {error && <p className="text-sm text-red-600">{error}</p>}
+          </div>
         </CardContent>
       </Card>
     </div>

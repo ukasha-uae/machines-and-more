@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createAdminSessionToken, isWeakAdminKey } from '@/lib/security/admin-auth';
-
-const ADMIN_COOKIE_NAME = '__session';
+import {
+  ADMIN_SESSION_COOKIE_NAME,
+  isWeakAdminKey,
+  verifyAdminSessionToken,
+} from '@/lib/security/admin-auth';
 
 export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
@@ -13,7 +15,7 @@ export async function middleware(request: NextRequest) {
   const isLoginRoute = pathname === '/admin/login';
   const isTeamListingRoute = pathname === '/admin/add-product';
   const adminKey = process.env.ADMIN_ACCESS_KEY;
-  const sessionCookie = request.cookies.get(ADMIN_COOKIE_NAME)?.value;
+  const sessionCookie = request.cookies.get(ADMIN_SESSION_COOKIE_NAME)?.value;
 
   if (!adminKey) {
     // Fail closed when admin key is not configured.
@@ -30,8 +32,8 @@ export async function middleware(request: NextRequest) {
     });
   }
 
-  const expectedToken = await createAdminSessionToken(adminKey);
-  const isAuthenticated = sessionCookie === expectedToken;
+  const session = await verifyAdminSessionToken(sessionCookie);
+  const isAuthenticated = session !== null;
 
   if (!isAuthenticated && !isLoginRoute && !isTeamListingRoute) {
     const loginUrl = request.nextUrl.clone();

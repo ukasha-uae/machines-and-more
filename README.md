@@ -54,6 +54,7 @@ Required GitHub repository secrets:
 - `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
 - `NEXT_PUBLIC_FIREBASE_APP_ID`
 - `ADMIN_ACCESS_KEY`
+- `ADMIN_EMAILS`
 - `FIREBASE_SERVICE_ACCOUNT_KEY`
 - `FIREBASE_PROJECT_ID`
 
@@ -137,7 +138,14 @@ Once dependencies are installed:
    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project-id.appspot.com
    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
    NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
+   ADMIN_ACCESS_KEY=strong-random-secret-used-to-sign-admin-sessions
+   ADMIN_EMAILS=admin1@example.com,admin2@example.com
    ```
+
+   Enable Google Authentication in Firebase Console before using Google admin sign-in:
+   - Go to Authentication > Sign-in method
+   - Enable Google provider
+   - Add your allowed admin accounts to `ADMIN_EMAILS`
 
 5. **Update Firebase Security Rules**
 

@@ -134,7 +134,7 @@ export default function AddProductPage() {
         productLocation: formData.productLocation,
         stockStatus: formData.stockStatus,
         condition: formData.condition,
-        status: 'pending', // Requires team approval before going live
+        status: 'approved',
         createdAt: new Date().toISOString(),
       };
 
@@ -153,7 +153,7 @@ export default function AddProductPage() {
       // Send WhatsApp notification to the team
       const condition = formData.condition.replace(/-/g, ' ');
       const message = encodeURIComponent(
-        `🆕 *New Product Pending Approval*\n\n` +
+        `🆕 *New Product Added Live*\n\n` +
         `📦 *Product:* ${formData.name}\n` +
         `💰 *Price:* GHS ${parseFloat(formData.price).toLocaleString()}\n` +
         `📍 *Location:* ${formData.productLocation}\n` +
@@ -161,13 +161,13 @@ export default function AddProductPage() {
         `⚙️ *Condition:* ${condition}\n` +
         `👤 *Seller:* ${formData.sellerName}\n` +
         `${formData.sellerContactPhone ? `📞 *Seller Phone:* ${formData.sellerContactPhone}\n` : ''}` +
-        `\n✅ Review and approve at:\n${window.location.origin}/admin/approvals`
+        `\n✅ Product is live in admin and storefront for testing.`
       );
       window.open(`https://wa.me/233598178955?text=${message}`, '_blank');
 
       toast({
-        title: '✅ Product Submitted!',
-        description: 'Your product is pending team review. We\'ll approve it shortly.',
+        title: '✅ Product Added!',
+        description: 'The product is live immediately so you can test without approvals.',
       });
 
       console.log('🔄 Redirecting to admin page...');
