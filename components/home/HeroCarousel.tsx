@@ -83,6 +83,7 @@ export default function HeroCarousel({ products }: HeroCarouselProps) {
                       src={product.imageUrl}
                       alt={product.name}
                       fill
+                      unoptimized
                       className="object-cover"
                       priority
                       sizes="(max-width: 768px) 100vw, 50vw"

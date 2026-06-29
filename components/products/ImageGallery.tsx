@@ -23,6 +23,7 @@ export default function ImageGallery({ images, productName }: ImageGalleryProps)
           src={images[selectedImage].url}
           alt={`${productName} - Image ${selectedImage + 1}`}
           fill
+          unoptimized
           className="object-cover"
           priority
           sizes="(max-width: 768px) 100vw, 50vw"
@@ -46,6 +47,7 @@ export default function ImageGallery({ images, productName }: ImageGalleryProps)
                 src={image.url}
                 alt={`${productName} - Thumbnail ${index + 1}`}
                 fill
+                unoptimized
                 className="object-cover"
                 sizes="(max-width: 768px) 25vw, 10vw"
               />
