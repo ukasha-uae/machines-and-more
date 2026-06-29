@@ -23,12 +23,12 @@ export async function getAllProducts(): Promise<Product[]> {
   } as Product));
 }
 
-// Only approved products (or old products without a status field) — shown to public
+// Testing mode: show all products except rejected ones
 export async function getApprovedProducts(): Promise<Product[]> {
   const snapshot = await getDocs(query(productsCollection, orderBy('createdAt', 'desc')));
   return snapshot.docs
     .map(doc => ({ id: doc.id, ...doc.data() } as Product))
-    .filter(p => !p.status || p.status === 'approved');
+    .filter(p => p.status !== 'rejected');
 }
 
 // Only pending products — shown to admin for review
@@ -128,6 +128,9 @@ export async function getProductsByCategory(mainCategory?: string, subCategory?:
     id: doc.id,
     ...doc.data()
   } as Product));
+
+  // Keep category browsing aligned with homepage visibility rules in testing mode.
+  products = products.filter(p => p.status !== 'rejected');
   
   // Filter by subcategory on client side
   if (subCategory) {
